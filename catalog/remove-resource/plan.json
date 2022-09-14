@@ -1,0 +1,70 @@
+{
+  "format_version": "1.1",
+  "terraform_version": "1.2.9",
+  "planned_values": {
+    "root_module": {}
+  },
+  "resource_changes": [
+    {
+      "address": "local_file.foo",
+      "mode": "managed",
+      "type": "local_file",
+      "name": "foo",
+      "provider_name": "registry.terraform.io/hashicorp/local",
+      "change": {
+        "actions": [
+          "delete"
+        ],
+        "before": {
+          "content": "foo!",
+          "content_base64": null,
+          "directory_permission": "0777",
+          "file_permission": "0777",
+          "filename": "./foo.bar",
+          "id": "4bf3e335199107182c6f7638efaad377acc7f452",
+          "sensitive_content": null,
+          "source": null
+        },
+        "after": null,
+        "after_unknown": {},
+        "before_sensitive": {
+          "sensitive_content": true
+        },
+        "after_sensitive": false
+      },
+      "action_reason": "delete_because_no_resource_config"
+    }
+  ],
+  "prior_state": {
+    "format_version": "1.0",
+    "terraform_version": "1.2.9",
+    "values": {
+      "root_module": {
+        "resources": [
+          {
+            "address": "local_file.foo",
+            "mode": "managed",
+            "type": "local_file",
+            "name": "foo",
+            "provider_name": "registry.terraform.io/hashicorp/local",
+            "schema_version": 0,
+            "values": {
+              "content": "foo!",
+              "content_base64": null,
+              "directory_permission": "0777",
+              "file_permission": "0777",
+              "filename": "./foo.bar",
+              "id": "4bf3e335199107182c6f7638efaad377acc7f452",
+              "sensitive_content": null,
+              "source": null
+            },
+            "sensitive_values": {}
+          }
+        ]
+      }
+    }
+  },
+  "configuration": {
+    "root_module": {}
+  }
+}
