@@ -1,11 +1,12 @@
 SHELL   := /bin/bash
 
 all: \
-	generate-create \
-	generate-delete \
-	generate-delete-create
+	gen-create \
+	gen-delete \
+	gen-delete-create \
+	gen-create-delete
 
-generate-%:
+gen-%:
 	cd ${*} && \
 	terraform init && \
 	terraform plan -out plan.bin && \
