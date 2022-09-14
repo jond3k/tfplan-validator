@@ -4,7 +4,8 @@ all: \
 	gen-create \
 	gen-delete \
 	gen-delete-create \
-	gen-create-delete
+	gen-create-delete \
+	gen-update
 
 gen-%:
 	cd ${*} && \
