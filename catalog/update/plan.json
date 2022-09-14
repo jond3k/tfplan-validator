@@ -1,0 +1,175 @@
+{
+  "format_version": "1.1",
+  "terraform_version": "1.2.9",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "google_project_iam_policy.project",
+          "mode": "managed",
+          "type": "google_project_iam_policy",
+          "name": "project",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 0,
+          "values": {
+            "etag": "BwXh/MJU3bk=",
+            "id": "jond-default",
+            "policy_data": "{\"bindings\":[{\"members\":[\"user:jond3k+missing@gmail.com\"],\"role\":\"roles/owner\"}]}",
+            "project": "jond-default"
+          },
+          "sensitive_values": {}
+        }
+      ]
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "google_project_iam_policy.project",
+      "mode": "managed",
+      "type": "google_project_iam_policy",
+      "name": "project",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "before": {
+          "etag": "BwXh/MJU3bk=",
+          "id": "jond-default",
+          "policy_data": "{\"bindings\":[{\"members\":[\"user:jond3k@gmail.com\"],\"role\":\"roles/owner\"}]}",
+          "project": "jond-default"
+        },
+        "after": {
+          "etag": "BwXh/MJU3bk=",
+          "id": "jond-default",
+          "policy_data": "{\"bindings\":[{\"members\":[\"user:jond3k+missing@gmail.com\"],\"role\":\"roles/owner\"}]}",
+          "project": "jond-default"
+        },
+        "after_unknown": {},
+        "before_sensitive": {},
+        "after_sensitive": {}
+      }
+    }
+  ],
+  "prior_state": {
+    "format_version": "1.0",
+    "terraform_version": "1.2.9",
+    "values": {
+      "root_module": {
+        "resources": [
+          {
+            "address": "data.google_iam_policy.policy",
+            "mode": "data",
+            "type": "google_iam_policy",
+            "name": "policy",
+            "provider_name": "registry.terraform.io/hashicorp/google",
+            "schema_version": 0,
+            "values": {
+              "audit_config": null,
+              "binding": [
+                {
+                  "condition": [],
+                  "members": [
+                    "user:jond3k+missing@gmail.com"
+                  ],
+                  "role": "roles/owner"
+                }
+              ],
+              "id": "182410954",
+              "policy_data": "{\"bindings\":[{\"members\":[\"user:jond3k+missing@gmail.com\"],\"role\":\"roles/owner\"}]}"
+            },
+            "sensitive_values": {
+              "binding": [
+                {
+                  "condition": [],
+                  "members": [
+                    false
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "address": "google_project_iam_policy.project",
+            "mode": "managed",
+            "type": "google_project_iam_policy",
+            "name": "project",
+            "provider_name": "registry.terraform.io/hashicorp/google",
+            "schema_version": 0,
+            "values": {
+              "etag": "BwXh/MJU3bk=",
+              "id": "jond-default",
+              "policy_data": "{\"bindings\":[{\"members\":[\"user:jond3k@gmail.com\"],\"role\":\"roles/owner\"}]}",
+              "project": "jond-default"
+            },
+            "sensitive_values": {},
+            "depends_on": [
+              "data.google_iam_policy.policy"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "configuration": {
+    "provider_config": {
+      "google": {
+        "name": "google",
+        "full_name": "registry.terraform.io/hashicorp/google"
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "google_project_iam_policy.project",
+          "mode": "managed",
+          "type": "google_project_iam_policy",
+          "name": "project",
+          "provider_config_key": "google",
+          "expressions": {
+            "policy_data": {
+              "references": [
+                "data.google_iam_policy.policy.policy_data",
+                "data.google_iam_policy.policy"
+              ]
+            },
+            "project": {
+              "constant_value": "jond-default"
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "data.google_iam_policy.policy",
+          "mode": "data",
+          "type": "google_iam_policy",
+          "name": "policy",
+          "provider_config_key": "google",
+          "expressions": {
+            "binding": [
+              {
+                "members": {
+                  "constant_value": [
+                    "user:jond3k+missing@gmail.com"
+                  ]
+                },
+                "role": {
+                  "constant_value": "roles/owner"
+                }
+              }
+            ]
+          },
+          "schema_version": 0
+        }
+      ]
+    }
+  },
+  "relevant_attributes": [
+    {
+      "resource": "data.google_iam_policy.policy",
+      "attribute": [
+        "policy_data"
+      ]
+    }
+  ]
+}
