@@ -1,9 +1,9 @@
 SHELL   := /bin/bash
 
 all: \
-	generate-add-resource \
-	generate-remove-resource \
-	generate-replace-resource
+	generate-create \
+	generate-delete \
+	generate-delete-create
 
 generate-%:
 	cd ${*} && \
