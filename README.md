@@ -35,9 +35,10 @@ First, let's generate a plan which we can manually inspect.
 
     Plan: 1 to add, 0 to change, 0 to destroy.
 
-If we like the results we can create a validator that will only accept plans with this create operation.
+If we like the results we can create a validator that will only accept plans with this create operation. The validator currently only accepts plans in json format. 
 
-    > tfplan-validator create ../rules.json ./plan
+    > terraform show -json ./plan > ./plan.json
+    > tfplan-validator create ../rules.json ./plan.json
 
     Created rules file ../rules.json that allows Terraform to perform the following actions:
 
@@ -50,7 +51,8 @@ Now we can safely auto-approve the other plans knowing that the validator will r
     do
       cd ../${dev_env}/
       terragrunt plan -out ./plan
-      tfplan-validator check ../rules.json ./plan &&
+      terragrunt show ./plan.txt > ./plan.json
+      tfplan-validator check ../rules.json ./plan.json &&
       terraform apply -auto-approve ./plan
     done
 
