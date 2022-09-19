@@ -1,4 +1,4 @@
-package tfplan_validator
+package main
 
 import (
 	"github.com/fautom/tfplan-validator/cmd"
