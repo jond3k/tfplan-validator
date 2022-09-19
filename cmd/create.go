@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	tfpv "github.com/fautom/tfplan-validator"
 	"github.com/spf13/cobra"
 )
 
@@ -15,11 +16,12 @@ func runCreateCmd(cmd *cobra.Command, args []string) error {
 	planPaths := args[0 : len(args)-1]
 	outputPath := args[len(args)-1]
 
-	//
-
-	// TODO write to file
-
-	fmt.Printf("create %s %s", outputPath, planPaths)
+	if filter, err := tfpv.NewFilterFromPlanPaths(planPaths); err != nil {
+		return err
+	} else {
+		filter.WriteJSON(outputPath)
+		fmt.Printf("create %s %s", outputPath, planPaths)
+	}
 	return nil
 }
 
