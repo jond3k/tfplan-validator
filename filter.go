@@ -118,3 +118,20 @@ func NewFilterFromPlanPaths(paths []string) (*PlanFilter, error) {
 		return NewFilterFromPlans(plans)
 	}
 }
+
+// HasAction returns true if the action is allowed by the filter
+func (f *PlanFilter) HasAction(address Address, action Action) bool {
+	allowed := f.AllowedActions[address]
+
+	if allowed == nil {
+		return false
+	}
+
+	for _, has := range allowed {
+		if action == has {
+			return true
+		}
+	}
+
+	return false
+}

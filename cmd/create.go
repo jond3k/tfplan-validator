@@ -14,11 +14,11 @@ func runCreateCmd(cmd *cobra.Command, args []string) error {
 	}
 
 	planPaths := args[0 : len(args)-1]
-	outputPath := args[len(args)-1]
+	filterPath := args[len(args)-1]
 
 	if filter, err := tfpv.NewFilterFromPlanPaths(planPaths); err != nil {
 		return fmt.Errorf("failed to create filter from plans: %w", err)
-	} else if err := filter.WriteJSON(outputPath); err != nil {
+	} else if err := filter.WriteJSON(filterPath); err != nil {
 		return fmt.Errorf("failed to write json: %w", err)
 	}
 	return nil

@@ -44,7 +44,7 @@ func TestRootCmd(t *testing.T) {
 			},
 		},
 		{
-			name: "create",
+			name: "create missing args",
 			args: []string{"create"},
 			stdout: `Usage:
   tfplan-validator create PLAN_FILE... OUTPUT_FILE [flags]
