@@ -10,6 +10,18 @@ type FilterResults struct {
 	Changes map[Address]Action
 }
 
+func NewFilterResults() *FilterResults {
+	return &FilterResults{
+		Errors:  map[Address]Action{},
+		Changes: map[Address]Action{},
+	}
+}
+
+// HasChanges returns true if there's at least 1 change
+func (fr *FilterResults) HasChanges() bool {
+	return len(fr.Changes) > 0
+}
+
 // HasErrors returns true if there's at least 1 error
 func (fr *FilterResults) HasErrors() bool {
 	return len(fr.Errors) > 0
@@ -17,7 +29,7 @@ func (fr *FilterResults) HasErrors() bool {
 
 // CheckPlan
 func CheckPlan(filter *PlanFilter, plan *tfjson.Plan) (*FilterResults, error) {
-	var results FilterResults
+	results := NewFilterResults()
 
 	for _, change := range plan.ResourceChanges {
 		address := Address(change.Address)
@@ -36,5 +48,5 @@ func CheckPlan(filter *PlanFilter, plan *tfjson.Plan) (*FilterResults, error) {
 		}
 	}
 
-	return &results, nil
+	return results, nil
 }

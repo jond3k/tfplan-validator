@@ -8,6 +8,31 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func printCheckReject(cmd *cobra.Command, results map[string]*tfpv.FilterResults) {
+	out := cmd.ErrOrStderr()
+	for path, result := range results {
+		if result.HasErrors() {
+			fmt.Fprintf(out, "The plan %s has been rejected because it has the following actions:\n\n", path)
+			for addr, action := range result.Errors {
+				fmt.Fprintf(out, "  - %s cannot be %s\n", addr, action.Pretty())
+			}
+		}
+		fmt.Fprint(out, "\n")
+	}
+}
+
+func printCheckAccept(cmd *cobra.Command, results map[string]*tfpv.FilterResults) {
+	out := cmd.OutOrStdout()
+	for path, result := range results {
+		if result.HasChanges() {
+			fmt.Fprintf(out, "The plan %s passes checks and will perform the following actions:\n\n", path)
+			for addr, action := range result.Changes {
+				fmt.Fprintf(out, "  - %s will be %s\n", addr, action.Pretty())
+			}
+		}
+	}
+}
+
 func runCheckCmd(cmd *cobra.Command, args []string) error {
 	if len(args) < 2 {
 		return errors.New("expected at least 2 arguments")
@@ -28,17 +53,25 @@ func runCheckCmd(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to read rules: %w", err)
 	}
 
-	var results []*tfpv.FilterResults
+	results := map[string]*tfpv.FilterResults{}
+	hasErrors := false
 
-	for _, plan := range plans {
+	for i, plan := range plans {
 		result, err := tfpv.CheckPlan(rules, plan)
 		if err != nil {
 			return err
 		}
-		results = append(results, result)
+		hasErrors = hasErrors || result.HasErrors()
+		results[planPaths[i]] = result
 	}
 
-	// TODO something with results!
+	if hasErrors {
+		cmd.SilenceUsage = true
+		printCheckReject(cmd, results)
+		return errors.New("invalid plan")
+	}
+
+	printCheckAccept(cmd, results)
 
 	return nil
 }

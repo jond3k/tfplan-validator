@@ -18,6 +18,14 @@ const (
 	ActionCreateBeforeDestroy Action = "create-delete"
 )
 
+var pretty = map[Action]string{
+	ActionCreate:              "created",
+	ActionUpdate:              "updated",
+	ActionDelete:              "deleted",
+	ActionDestroyBeforeCreate: "replaced (deleted then re-created)",
+	ActionCreateBeforeDestroy: "replaced (created then deleted)",
+}
+
 // CompatiblePairs are actions that may be equivalent between different state files
 var compatiblePairs = map[[2]Action]bool{
 	{ActionCreate, ActionUpdate}:              true,
@@ -32,6 +40,11 @@ func AreCompatible(left Action, right Action) bool {
 	return left == right ||
 		compatiblePairs[[2]Action{left, right}] ||
 		compatiblePairs[[2]Action{right, left}]
+}
+
+// Pretty printable string
+func (a Action) Pretty() string {
+	return pretty[a]
 }
 
 // ConvertAction from the tfjson form to one we can more easily work with
