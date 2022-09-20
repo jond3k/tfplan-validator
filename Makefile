@@ -8,6 +8,10 @@ coverage: mod
 	gotestsum --format=short-verbose -- -coverprofile=cover.out
 	go tool cover -html=cover.out
 
+clear:
+	rm bin/tfplan_validator
+	rm test-results/*.json
+
 mod:
 	go install gotest.tools/gotestsum@latest
 	go mod download && go mod verify && go mod tidy

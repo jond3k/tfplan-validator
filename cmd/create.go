@@ -20,8 +20,6 @@ func runCreateCmd(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to create filter from plans: %w", err)
 	} else if err := filter.WriteJSON(outputPath); err != nil {
 		return fmt.Errorf("failed to write json: %w", err)
-	} else {
-		fmt.Printf("Written rules to %s", outputPath)
 	}
 	return nil
 }

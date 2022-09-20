@@ -34,7 +34,7 @@ func ReadPlanFilter(path string) (*PlanFilter, error) {
 
 // WritePlanFilter to a path
 func (pf *PlanFilter) WriteJSON(path string) error {
-	if data, err := json.MarshalIndent(pf, "", " "); err != nil {
+	if data, err := json.MarshalIndent(pf, "", "  "); err != nil {
 		return err
 	} else if err := ioutil.WriteFile(path, data, 0644); err != nil {
 		return err

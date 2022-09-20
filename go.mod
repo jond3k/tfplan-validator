@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/davecgh/go-spew v1.1.1
 	github.com/hashicorp/terraform-json v0.14.0
+	github.com/kylelemons/godebug v0.0.0-20170820004349-d65d576e9348
 	github.com/spf13/cobra v1.5.0
 )
 
