@@ -51,81 +51,56 @@ func TestNewFilterFromPlans(t *testing.T) {
 				AllowedActions: map[Address][]Action{},
 			},
 		},
-		// {
-		// 	name: "create",
-		// 	in:   readPlansP([]string{"../fixtures/create/plan.json"}),
-		// 	expected: &PlanFilter{
-		// 		FormatVersion: CurrentFormatVersion,
-		// 		ResourceFilter: []*ResourceFilter{
-		// 			{
-		// 				Address: "local_file.foo",
-		// 				AllowedActions: []tfjson.Actions{
-		// 					tfjson.Actions{tfjson.ActionCreate},
-		// 				},
-		// 			},
-		// 		},
-		// 	},
-		// },
-		// {
-		// 	name: "create-delete",
-		// 	in:   readPlansP([]string{"../fixtures/create-delete/plan.json"}),
-		// 	expected: &PlanFilter{
-		// 		FormatVersion: CurrentFormatVersion,
-		// 		ResourceFilter: []*ResourceFilter{
-		// 			{
-		// 				Address: "local_file.foo",
-		// 				AllowedActions: []tfjson.Actions{
-		// 					tfjson.Actions{tfjson.ActionCreate, tfjson.ActionDelete},
-		// 				},
-		// 			},
-		// 		},
-		// 	},
-		// },
-		// {
-		// 	name: "delete",
-		// 	in:   readPlansP([]string{"../fixtures/delete/plan.json"}),
-		// 	expected: &PlanFilter{
-		// 		FormatVersion: CurrentFormatVersion,
-		// 		ResourceFilter: []*ResourceFilter{
-		// 			{
-		// 				Address: "local_file.foo",
-		// 				AllowedActions: []tfjson.Actions{
-		// 					tfjson.Actions{tfjson.ActionDelete},
-		// 				},
-		// 			},
-		// 		},
-		// 	},
-		// },
-		// {
-		// 	name: "delete-create",
-		// 	in:   readPlansP([]string{"../fixtures/delete-create/plan.json"}),
-		// 	expected: &PlanFilter{
-		// 		FormatVersion: CurrentFormatVersion,
-		// 		ResourceFilter: []*ResourceFilter{
-		// 			{
-		// 				Address: "local_file.foo",
-		// 				AllowedActions: []tfjson.Actions{
-		// 					tfjson.Actions{tfjson.ActionDelete, tfjson.ActionCreate},
-		// 				},
-		// 			},
-		// 		},
-		// 	},
-		// },
-		// {
-		// 	name: "update",
-		// 	in:   readPlansP([]string{"../fixtures/update/plan.json"}),
-		// 	expected: &PlanFilter{
-		// 		FormatVersion: CurrentFormatVersion,
-		// 		ResourceFilter: []*ResourceFilter{
-		// 			{
-		// 				Address: "local_file.foo",
-		// 				AllowedActions: []tfjson.Actions{
-		// 					tfjson.Actions{tfjson.ActionUpdate},
-		// 				},
-		// 			},
-		// 		},
-		// 	},
-		// },
+		{
+			name: "create",
+			in:   readPlansP([]string{"fixtures/create/plan.json"}),
+			expected: &PlanFilter{
+				FormatVersion: CurrentFormatVersion,
+				AllowedActions: map[Address][]Action{
+					"local_file.foo": {ActionCreate},
+				},
+			},
+		},
+		{
+			name: "create-delete",
+			in:   readPlansP([]string{"fixtures/create-delete/plan.json"}),
+			expected: &PlanFilter{
+				FormatVersion: CurrentFormatVersion,
+				AllowedActions: map[Address][]Action{
+					"local_file.foo": {ActionCreateBeforeDestroy},
+				},
+			},
+		},
+		{
+			name: "delete",
+			in:   readPlansP([]string{"fixtures/delete/plan.json"}),
+			expected: &PlanFilter{
+				FormatVersion: CurrentFormatVersion,
+				AllowedActions: map[Address][]Action{
+					"local_file.foo": {ActionDelete},
+				},
+			},
+		},
+		{
+			name: "delete-create",
+			in:   readPlansP([]string{"fixtures/delete-create/plan.json"}),
+			expected: &PlanFilter{
+				FormatVersion: CurrentFormatVersion,
+				AllowedActions: map[Address][]Action{
+					"local_file.foo": {ActionDestroyBeforeCreate},
+				},
+			},
+		},
+		{
+			name: "update",
+			in:   readPlansP([]string{"fixtures/update/plan.json"}),
+			expected: &PlanFilter{
+				FormatVersion: CurrentFormatVersion,
+				AllowedActions: map[Address][]Action{
+					"google_project_iam_policy.project": {ActionUpdate},
+				},
+			},
+		},
 	}
 
 	for _, tc := range cases {
