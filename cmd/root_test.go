@@ -34,7 +34,6 @@ func TestRootCmd(t *testing.T) {
 		args   []string
 		stdout string
 		stderr string
-		status int
 		files  map[string]string
 	}{
 		{
@@ -43,6 +42,16 @@ func TestRootCmd(t *testing.T) {
 			files: map[string]string{
 				"../test-results/test-create.json": loadTestData("../fixtures/itest/create-delete-create.json"),
 			},
+		},
+		{
+			name: "create",
+			args: []string{"create"},
+			stdout: `Usage:
+  tfplan-validator create PLAN_FILE... OUTPUT_FILE [flags]
+
+Flags:
+  -h, --help   help for create`,
+			stderr: `Error: expected at least 2 arguments`,
 		},
 	}
 
@@ -65,9 +74,9 @@ func TestRootCmd(t *testing.T) {
 			var stdout string
 			var stdout_buf bytes.Buffer
 			io.Copy(&stderr_buf, stderr_r)
-			stderr = stderr_buf.String()
+			stderr = strings.TrimSpace(stderr_buf.String())
 			io.Copy(&stdout_buf, stdout_r)
-			stdout = stdout_buf.String()
+			stdout = strings.TrimSpace(stdout_buf.String())
 
 			expectedParts := []string{"stdout", tc.stdout, "stderr", tc.stderr}
 			for k, v := range tc.files {
