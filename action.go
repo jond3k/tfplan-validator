@@ -18,6 +18,21 @@ const (
 	ActionCreateBeforeDestroy Action = "create-delete"
 )
 
+// CompatiblePairs are actions that may be equivalent between different state files
+var compatiblePairs = map[[2]Action]bool{
+	{ActionCreate, ActionUpdate}:              true,
+	{ActionCreate, ActionDestroyBeforeCreate}: true,
+	{ActionCreate, ActionCreateBeforeDestroy}: true,
+	{ActionUpdate, ActionDestroyBeforeCreate}: true,
+	{ActionUpdate, ActionCreateBeforeDestroy}: true,
+}
+
+// AreCompatible returns true if the actions may be equivalent between different state files
+func AreCompatible(left Action, right Action) bool {
+	return compatiblePairs[[2]Action{left, right}] ||
+		compatiblePairs[[2]Action{right, left}]
+}
+
 // IsEqual to a TF plan action?
 func (a Action) IsEqual(actions *tfjson.Actions) bool {
 	return ConvertAction(actions) == a
