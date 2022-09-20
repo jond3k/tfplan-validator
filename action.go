@@ -29,13 +29,9 @@ var compatiblePairs = map[[2]Action]bool{
 
 // AreCompatible returns true if the actions may be equivalent between different state files
 func AreCompatible(left Action, right Action) bool {
-	return compatiblePairs[[2]Action{left, right}] ||
+	return left == right ||
+		compatiblePairs[[2]Action{left, right}] ||
 		compatiblePairs[[2]Action{right, left}]
-}
-
-// IsEqual to a TF plan action?
-func (a Action) IsEqual(actions *tfjson.Actions) bool {
-	return ConvertAction(actions) == a
 }
 
 // ConvertAction from the tfjson form to one we can more easily work with

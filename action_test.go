@@ -65,3 +65,37 @@ func TestConvertAction(t *testing.T) {
 		})
 	}
 }
+
+func TestAreCompatible(t *testing.T) {
+	cases := []struct {
+		name     string
+		in       [2]Action
+		expected bool
+	}{
+		{
+			name:     "create, update",
+			in:       [2]Action{ActionCreate, ActionUpdate},
+			expected: true,
+		}, {
+			name:     "create, delete",
+			in:       [2]Action{ActionCreate, ActionDelete},
+			expected: false,
+		}, {
+			name:     "create, create-delete",
+			in:       [2]Action{ActionCreate, ActionCreateBeforeDestroy},
+			expected: true,
+		}, {
+			name:     "create, create",
+			in:       [2]Action{ActionCreate, ActionCreate},
+			expected: true,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			if actual := AreCompatible(tc.in[0], tc.in[1]); tc.expected != actual {
+				t.Fatalf("expected:\n\n%s\ngot:\n\n%s\n", spew.Sdump(tc.expected), spew.Sdump(actual))
+			}
+		})
+	}
+}
