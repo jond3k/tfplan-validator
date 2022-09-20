@@ -51,26 +51,22 @@ func ParsePlanFilter(data []byte) (*PlanFilter, error) {
 	return &f, nil
 }
 
+// relevantActions are the only types we care about
+var relevantActions = map[Action]bool{
+	ActionCreate:              true,
+	ActionUpdate:              true,
+	ActionDelete:              true,
+	ActionDestroyBeforeCreate: true,
+	ActionCreateBeforeDestroy: true,
+}
+
 // IsRelevant returns true if the change is something we care about
 func IsRelevant(rc *tfjson.ResourceChange) (bool, error) {
 	if rc.Mode != tfjson.ManagedResourceMode {
 		return false, nil
 	}
-	switch ConvertAction(&rc.Change.Actions) {
-	case ActionNoOp:
-		return false, nil
-	case ActionRead:
-		return false, nil
-	case ActionCreate:
-		return true, nil
-	case ActionUpdate:
-		return true, nil
-	case ActionDelete:
-		return true, nil
-	case ActionDestroyBeforeCreate:
-		return true, nil
-	case ActionCreateBeforeDestroy:
-		return true, nil
+	if action := ConvertAction(&rc.Change.Actions); action != ActionInvalid {
+		return relevantActions[action], nil
 	}
 	return false, fmt.Errorf("unrecognized change in plan: %v", rc)
 }
@@ -80,10 +76,6 @@ func NewFilterFromPlan(plan *tfjson.Plan) (*PlanFilter, error) {
 	allowed := map[Address][]Action{}
 
 	for _, rc := range plan.ResourceChanges {
-		if rc.Mode != tfjson.ManagedResourceMode {
-			continue
-		}
-
 		if b, err := IsRelevant(rc); err != nil {
 			return nil, err
 		} else if !b {
@@ -91,20 +83,12 @@ func NewFilterFromPlan(plan *tfjson.Plan) (*PlanFilter, error) {
 		}
 
 		address := Address(rc.Address)
-		var current []Action
-		if current = allowed[Address(address)]; current == nil {
-			current = []Action{}
+
+		if current := allowed[address]; current != nil {
+			return nil, fmt.Errorf("duplicate address in plan: %s", current)
 		}
 
-		action := ConvertAction(&rc.Change.Actions)
-
-		for _, other := range current {
-			if !AreCompatible(action, other) {
-				return nil, fmt.Errorf("contradictory actions: %s has %s and %s", address, action, other)
-			}
-		}
-
-		allowed[address] = append(current, action)
+		allowed[address] = []Action{ConvertAction(&rc.Change.Actions)}
 	}
 
 	return &PlanFilter{
@@ -133,10 +117,4 @@ func NewFilterFromPlanPaths(paths []string) (*PlanFilter, error) {
 	} else {
 		return NewFilterFromPlans(plans)
 	}
-}
-
-// MergePlanFilters combines filters from multiple plans into one
-func MergePlanFilters(filters []*PlanFilter) (*PlanFilter, error) {
-	// TODO: currently only supporting one
-	return filters[0], nil
 }

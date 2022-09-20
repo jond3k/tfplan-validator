@@ -8,26 +8,6 @@ import (
 	tfjson "github.com/hashicorp/terraform-json"
 )
 
-// # local_file.foo will be created
-// + resource "local_file" "foo" {
-// 		+ content              = "foo!"
-// 		+ directory_permission = "0777"
-// 		+ file_permission      = "0777"
-// 		+ filename             = "./foo.bar"
-// 		+ id                   = (known after apply)
-// 	}
-
-// Plan: 1 to add, 0 to change, 0 to destroy.
-
-// If we like the results we can create a validator that will only accept plans with this create operation. The validator currently only accepts plans in json format.
-
-// > terraform show -json ./plan > ./plan.json
-// > tfplan-validator create ../rules.json ./plan.json
-
-// Created rules file ../rules.json that allows Terraform to perform the following actions:
-
-// - local_file.foo can be created
-
 func readPlansP(paths []string) []*tfjson.Plan {
 	if plans, err := ReadPlans(paths); err != nil {
 		panic(err)
@@ -98,6 +78,56 @@ func TestNewFilterFromPlans(t *testing.T) {
 				FormatVersion: CurrentFormatVersion,
 				AllowedActions: map[Address][]Action{
 					"google_project_iam_policy.project": {ActionUpdate},
+				},
+			},
+		},
+		{
+			name: "ignore data",
+			in: []*tfjson.Plan{
+				{
+					ResourceChanges: []*tfjson.ResourceChange{
+						{
+							Mode:    tfjson.DataResourceMode,
+							Address: "a.b.c",
+						},
+					},
+				},
+			},
+			expected: &PlanFilter{
+				FormatVersion:  CurrentFormatVersion,
+				AllowedActions: map[Address][]Action{},
+			},
+		},
+		{
+			name: "create and create-delete are compatible",
+			in: []*tfjson.Plan{
+				{
+					ResourceChanges: []*tfjson.ResourceChange{
+						{
+							Mode:    tfjson.ManagedResourceMode,
+							Address: "a.b.c",
+							Change: &tfjson.Change{
+								Actions: tfjson.Actions{tfjson.ActionCreate},
+							},
+						},
+					},
+				},
+				{
+					ResourceChanges: []*tfjson.ResourceChange{
+						{
+							Mode:    tfjson.ManagedResourceMode,
+							Address: "a.b.c",
+							Change: &tfjson.Change{
+								Actions: tfjson.Actions{tfjson.ActionCreate, tfjson.ActionDelete},
+							},
+						},
+					},
+				},
+			},
+			expected: &PlanFilter{
+				FormatVersion: CurrentFormatVersion,
+				AllowedActions: map[Address][]Action{
+					"a.b.c": {ActionCreate, ActionCreateBeforeDestroy},
 				},
 			},
 		},
