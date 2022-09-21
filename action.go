@@ -23,7 +23,7 @@ var pretty = map[Action]string{
 	ActionUpdate:              "updated",
 	ActionDelete:              "deleted",
 	ActionDestroyBeforeCreate: "replaced (deleted then re-created)",
-	ActionCreateBeforeDestroy: "replaced (created then deleted)",
+	ActionCreateBeforeDestroy: "replaced (re-created before deletion)",
 }
 
 // CompatiblePairs are actions that may be equivalent between different state files

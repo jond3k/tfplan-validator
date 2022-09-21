@@ -32,6 +32,19 @@ func ReadPlanFilter(path string) (*PlanFilter, error) {
 	}
 }
 
+// ReadPlanFilters from paths
+func ReadPlanFilters(paths []string) ([]*PlanFilter, error) {
+	plans := make([]*PlanFilter, len(paths))
+	for i, p := range paths {
+		plan, err := ReadPlanFilter(p)
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", p, err)
+		}
+		plans[i] = plan
+	}
+	return plans, nil
+}
+
 // WritePlanFilter to a path
 func (pf *PlanFilter) WriteJSON(path string) error {
 	if data, err := json.MarshalIndent(pf, "", "  "); err != nil {
