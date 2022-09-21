@@ -143,3 +143,51 @@ func TestNewFilterFromPlans(t *testing.T) {
 		})
 	}
 }
+
+func TestReadPlanFilters(t *testing.T) {
+	cases := []struct {
+		name     string
+		in       []string
+		expected []*PlanFilter
+		errStr   string
+	}{
+		{
+			name: "load two files",
+			in:   []string{"fixtures/create/filter.json", "fixtures/update/filter.json"},
+			expected: []*PlanFilter{
+				{
+					FormatVersion: CurrentFormatVersion,
+					AllowedActions: map[Address][]Action{
+						"local_file.foo": {ActionCreate},
+					},
+				},
+				{
+					FormatVersion: CurrentFormatVersion,
+					AllowedActions: map[Address][]Action{
+						"google_project_iam_policy.project": {ActionUpdate},
+					},
+				},
+			},
+		},
+		{
+			name:   "one file is missing",
+			in:     []string{"fixtures/create/filter.json", "fixtures/missing.json"},
+			errStr: "fixtures/missing.json: open fixtures/missing.json: no such file or directory",
+		},
+		{
+			name:   "one file is missing",
+			in:     []string{"fixtures/create/filter.json", "fixtures/itest/unparseable.json"},
+			errStr: "fixtures/itest/unparseable.json: unexpected end of JSON input",
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			actual, err := ReadPlanFilters(tc.in)
+			errStr := makeErrStr(err)
+			if !reflect.DeepEqual(tc.expected, actual) || tc.errStr != errStr {
+				t.Fatalf("expected:\n\n%s\ngot:\n\n%s\n\nexpected err:%s\n\ngot err: %s\n", spew.Sdump(tc.expected), spew.Sdump(actual), tc.errStr, errStr)
+			}
+		})
+	}
+}
