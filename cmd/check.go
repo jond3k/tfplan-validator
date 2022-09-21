@@ -3,6 +3,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	tfpv "github.com/fautom/tfplan-validator"
 	"github.com/spf13/cobra"
@@ -14,7 +15,15 @@ func printCheckReject(cmd *cobra.Command, results map[string]*tfpv.FilterResults
 		if result.HasErrors() {
 			fmt.Fprintf(out, "The plan %s has been rejected because it has the following actions:\n\n", path)
 			for addr, action := range result.Errors {
-				fmt.Fprintf(out, "  - %s cannot be %s\n", addr, action.Pretty())
+				if allowedActions := result.PlanFilter.AllowedActions[addr]; allowedActions == nil {
+					fmt.Fprintf(out, "  - %s cannot be %s\n", addr, action.Pretty())
+				} else {
+					allowedPretty := make([]string, len(allowedActions))
+					for i, allowedAction := range allowedActions {
+						allowedPretty[i] = allowedAction.Pretty()
+					}
+					fmt.Fprintf(out, "  - %s cannot be %s only %s\n", addr, action.Pretty(), strings.Join(allowedPretty, " or "))
+				}
 			}
 		}
 		fmt.Fprint(out, "\n")

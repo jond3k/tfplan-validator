@@ -6,14 +6,16 @@ import (
 
 // FilterResults describes whether a plan is allowed or not
 type FilterResults struct {
-	Errors  map[Address]Action
-	Changes map[Address]Action
+	Errors     map[Address]Action
+	Changes    map[Address]Action
+	PlanFilter *PlanFilter
 }
 
-func NewFilterResults() *FilterResults {
+func NewFilterResults(filter *PlanFilter) *FilterResults {
 	return &FilterResults{
-		Errors:  map[Address]Action{},
-		Changes: map[Address]Action{},
+		Errors:     map[Address]Action{},
+		Changes:    map[Address]Action{},
+		PlanFilter: filter,
 	}
 }
 
@@ -29,7 +31,7 @@ func (fr *FilterResults) HasErrors() bool {
 
 // CheckPlan
 func CheckPlan(filter *PlanFilter, plan *tfjson.Plan) (*FilterResults, error) {
-	results := NewFilterResults()
+	results := NewFilterResults(filter)
 
 	for _, change := range plan.ResourceChanges {
 		address := Address(change.Address)

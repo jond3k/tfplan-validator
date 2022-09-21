@@ -42,7 +42,7 @@ func (tc *cmdCase) run(t *testing.T) {
 		stderr_r, stderr_w := osPipe()
 		stdout_r, stdout_w := osPipe()
 
-		c := newRootCmd()
+		c := New()
 		c.SetArgs(tc.args)
 		c.SetErr(stderr_w)
 		c.SetOut(stdout_w)
