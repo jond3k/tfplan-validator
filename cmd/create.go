@@ -9,9 +9,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func printCreateResults(cmd *cobra.Command, filterPath string, filter *tfpv.PlanFilter) {
+func printPlanFilterLines(cmd *cobra.Command, filterPath string, filter *tfpv.PlanFilter) {
 	out := cmd.OutOrStdout()
-	fmt.Fprintf(out, "Created rules file %s that allows Terraform to perform the following actions:\n\n", filterPath)
 	for addr, actions := range filter.AllowedActions {
 		pretty := make([]string, len(actions))
 		for i, action := range actions {
@@ -38,7 +37,8 @@ func runCreateCmd(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to write json: %w", err)
 	}
 
-	printCreateResults(cmd, filterPath, filter)
+	fmt.Fprintf(cmd.OutOrStdout(), "Created rules file %s that allows Terraform to perform the following actions:\n\n", filterPath)
+	printPlanFilterLines(cmd, filterPath, filter)
 
 	return nil
 }
