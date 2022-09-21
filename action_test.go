@@ -99,3 +99,29 @@ func TestAreCompatible(t *testing.T) {
 		})
 	}
 }
+
+func TestPretty(t *testing.T) {
+	cases := []struct {
+		in       Action
+		expected string
+	}{
+		{
+			in:       ActionCreate,
+			expected: "created",
+		}, {
+			in:       ActionCreateBeforeDestroy,
+			expected: "replaced (re-created before deletion)",
+		}, {
+			in:       ActionInvalid,
+			expected: "",
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(string(tc.in), func(t *testing.T) {
+			if actual := tc.in.Pretty(); tc.expected != actual {
+				t.Fatalf("expected:\n\n%s\ngot:\n\n%s\n", spew.Sdump(tc.expected), spew.Sdump(actual))
+			}
+		})
+	}
+}
