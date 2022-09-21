@@ -65,10 +65,11 @@ func IsRelevant(rc *tfjson.ResourceChange) (bool, error) {
 	if rc.Mode != tfjson.ManagedResourceMode {
 		return false, nil
 	}
-	if action := ConvertAction(&rc.Change.Actions); action != ActionInvalid {
-		return relevantActions[action], nil
+	action := ConvertAction(&rc.Change.Actions)
+	if action == ActionInvalid {
+		return false, fmt.Errorf("unrecognized action in plan: %v", rc.Change.Actions)
 	}
-	return false, fmt.Errorf("unrecognized change in plan: %v", rc)
+	return relevantActions[action], nil
 }
 
 // FilterForPlan creates a filter that accepts everything in the specified plan
