@@ -1,30 +1,23 @@
 package cmd
 
 import (
-	"path"
 	"testing"
 )
-
-var missingPlanPath = path.Join("..", "fixtures", "missing.json")
-var createPlanPath = path.Join("..", "fixtures", "create", "plan.json")
-var createFilterPath = path.Join("..", "fixtures", "create", "filter.json")
-var deleteFilterPath = path.Join("..", "fixtures", "delete", "filter.json")
-var updateFilterPath = path.Join("..", "fixtures", "update", "filter.json")
 
 func TestCheckCmd(t *testing.T) {
 	cases := []cmdCase{
 		{
 			name: "success",
-			args: []string{"check", createPlanPath, createFilterPath},
-			stdout: `The plan ../fixtures/create/plan.json passes checks and will perform the following actions:
+			args: []string{"check", planPath("create"), "--rules", filterPath("create")},
+			stdout: `The plan ` + planPath("create") + ` passes checks and will perform the following actions:
 
   - local_file.foo will be created`,
 		},
 		{
 			name:   "failure known resource",
-			args:   []string{"check", createPlanPath, deleteFilterPath},
+			args:   []string{"check", planPath("create"), "--rules", filterPath("delete")},
 			stdout: ``,
-			stderr: `The plan ../fixtures/create/plan.json has been rejected because it has the following actions:
+			stderr: `The plan ` + planPath("create") + ` has been rejected because it has the following actions:
 
   - local_file.foo cannot be created only deleted
 
@@ -32,9 +25,9 @@ Error: invalid plan`,
 		},
 		{
 			name:   "unknown resource",
-			args:   []string{"check", createPlanPath, updateFilterPath},
+			args:   []string{"check", planPath("create"), "--rules", filterPath("update")},
 			stdout: ``,
-			stderr: `The plan ../fixtures/create/plan.json has been rejected because it has the following actions:
+			stderr: `The plan ` + planPath("create") + ` has been rejected because it has the following actions:
 
   - local_file.foo cannot be created
 
@@ -44,40 +37,44 @@ Error: invalid plan`,
 			name: "missing args",
 			args: []string{"check"},
 			stdout: `Usage:
-  tfplan-validator check PLAN_FILE... RULES_FILE [flags]
+  tfplan-validator check PLAN_FILE... [--rules RULES_FILE] [flags]
 
 Flags:
-  -h, --help   help for check`,
-			stderr: `Error: expected at least 2 arguments`,
+  -h, --help           help for check
+      --rules string   The rules file to use (default "./rules.json")`,
+			stderr: `Error: expected at least one plan`,
 		},
 		{
 			name: "missing plan",
-			args: []string{"check", missingPlanPath, updateFilterPath},
+			args: []string{"check", planPath("missing"), "--rules", filterPath("update")},
 			stdout: `Usage:
-  tfplan-validator check PLAN_FILE... RULES_FILE [flags]
+  tfplan-validator check PLAN_FILE... [--rules RULES_FILE] [flags]
 
 Flags:
-  -h, --help   help for check`,
-			stderr: "Error: failed to load plans: " + missingPlanPath + ": open " + missingPlanPath + ": no such file or directory",
+  -h, --help           help for check
+      --rules string   The rules file to use (default "./rules.json")`,
+			stderr: "Error: failed to load plans: " + planPath("missing") + ": open " + planPath("missing") + ": no such file or directory",
 		},
 		{
 			name: "missing filter",
-			args: []string{"check", createPlanPath, missingPlanPath},
+			args: []string{"check", planPath("create"), "--rules", filterPath("missing")},
 			stdout: `Usage:
-  tfplan-validator check PLAN_FILE... RULES_FILE [flags]
+  tfplan-validator check PLAN_FILE... [--rules RULES_FILE] [flags]
 
 Flags:
-  -h, --help   help for check`,
-			stderr: `Error: failed to read rules: open ../fixtures/missing.json: no such file or directory`,
+  -h, --help           help for check
+      --rules string   The rules file to use (default "./rules.json")`,
+			stderr: `Error: failed to read rules: open ../fixtures/missing/filter.json: no such file or directory`,
 		},
 		{
 			name: "invalid plan",
-			args: []string{"check", "../fixtures/itest/invalid-plan.json", updateFilterPath},
+			args: []string{"check", otherPath("invalid-plan.json"), "--rules", filterPath("update")},
 			stdout: `Usage:
-  tfplan-validator check PLAN_FILE... RULES_FILE [flags]
+  tfplan-validator check PLAN_FILE... [--rules RULES_FILE] [flags]
 
 Flags:
-  -h, --help   help for check`,
+  -h, --help           help for check
+      --rules string   The rules file to use (default "./rules.json")`,
 			stderr: `Error: unrecognized action in plan: [invalid]`,
 		},
 	}

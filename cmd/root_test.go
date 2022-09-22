@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io"
 	"os"
+	"path"
 	"strings"
 	"testing"
 
@@ -26,6 +27,18 @@ func loadTestData(file string) string {
 		panic(err)
 	}
 	return string(data)
+}
+
+func planPath(typ string) string {
+	return path.Join("..", "fixtures", typ, "plan.json")
+}
+
+func filterPath(typ string) string {
+	return path.Join("..", "fixtures", typ, "filter.json")
+}
+
+func otherPath(name string) string {
+	return path.Join("..", "fixtures", "itest", name)
 }
 
 type cmdCase struct {

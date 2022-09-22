@@ -43,12 +43,16 @@ func printCheckAccept(cmd *cobra.Command, results map[string]*tfpv.FilterResults
 }
 
 func runCheckCmd(cmd *cobra.Command, args []string) error {
-	if len(args) < 2 {
-		return errors.New("expected at least 2 arguments")
+	if len(args) < 1 {
+		return errors.New("expected at least one plan")
 	}
 
-	planPaths := args[0 : len(args)-1]
-	rulesPath := args[len(args)-1]
+	planPaths := args
+	rulesPath, err := cmd.Flags().GetString("rules")
+
+	if err != nil {
+		return err
+	}
 
 	plans, err := tfpv.ReadPlans(planPaths)
 
@@ -86,9 +90,11 @@ func runCheckCmd(cmd *cobra.Command, args []string) error {
 }
 
 func newCheckCmd() *cobra.Command {
-	return &cobra.Command{
-		Use:   "check PLAN_FILE... RULES_FILE",
+	cmd := &cobra.Command{
+		Use:   "check PLAN_FILE... [--rules RULES_FILE]",
 		Short: "Validate one or more plan using a rule file",
 		RunE:  runCheckCmd,
 	}
+	cmd.Flags().String("rules", "./rules.json", "The rules file to use")
+	return cmd
 }
