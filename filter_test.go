@@ -1,6 +1,7 @@
 package tfplan_validator
 
 import (
+	"path"
 	"reflect"
 	"testing"
 
@@ -33,7 +34,7 @@ func TestNewFilterFromPlans(t *testing.T) {
 		},
 		{
 			name: "create",
-			in:   readPlansP([]string{"fixtures/create/plan.json"}),
+			in:   readPlansP([]string{path.Join("fixtures", "create", "plan.json")}),
 			expected: &PlanFilter{
 				FormatVersion: CurrentFormatVersion,
 				AllowedActions: map[Address][]Action{
@@ -43,7 +44,7 @@ func TestNewFilterFromPlans(t *testing.T) {
 		},
 		{
 			name: "create-delete",
-			in:   readPlansP([]string{"fixtures/create-delete/plan.json"}),
+			in:   readPlansP([]string{path.Join("fixtures", "create-delete", "plan.json")}),
 			expected: &PlanFilter{
 				FormatVersion: CurrentFormatVersion,
 				AllowedActions: map[Address][]Action{
@@ -53,7 +54,7 @@ func TestNewFilterFromPlans(t *testing.T) {
 		},
 		{
 			name: "delete",
-			in:   readPlansP([]string{"fixtures/delete/plan.json"}),
+			in:   readPlansP([]string{path.Join("fixtures", "delete", "plan.json")}),
 			expected: &PlanFilter{
 				FormatVersion: CurrentFormatVersion,
 				AllowedActions: map[Address][]Action{
@@ -63,7 +64,7 @@ func TestNewFilterFromPlans(t *testing.T) {
 		},
 		{
 			name: "delete-create",
-			in:   readPlansP([]string{"fixtures/delete-create/plan.json"}),
+			in:   readPlansP([]string{path.Join("fixtures", "delete-create", "plan.json")}),
 			expected: &PlanFilter{
 				FormatVersion: CurrentFormatVersion,
 				AllowedActions: map[Address][]Action{
@@ -73,7 +74,7 @@ func TestNewFilterFromPlans(t *testing.T) {
 		},
 		{
 			name: "update",
-			in:   readPlansP([]string{"fixtures/update/plan.json"}),
+			in:   readPlansP([]string{path.Join("fixtures", "update", "plan.json")}),
 			expected: &PlanFilter{
 				FormatVersion: CurrentFormatVersion,
 				AllowedActions: map[Address][]Action{
@@ -153,7 +154,7 @@ func TestReadPlanFilters(t *testing.T) {
 	}{
 		{
 			name: "load two files",
-			in:   []string{"fixtures/create/filter.json", "fixtures/update/filter.json"},
+			in:   []string{path.Join("fixtures", "create", "filter.json"), path.Join("fixtures", "update", "filter.json")},
 			expected: []*PlanFilter{
 				{
 					FormatVersion: CurrentFormatVersion,
@@ -171,13 +172,13 @@ func TestReadPlanFilters(t *testing.T) {
 		},
 		{
 			name:   "one file is missing",
-			in:     []string{"fixtures/create/filter.json", "fixtures/missing.json"},
-			errStr: "fixtures/missing.json: open fixtures/missing.json: no such file or directory",
+			in:     []string{path.Join("fixtures", "create", "filter.json"), path.Join("fixtures", "missing.json")},
+			errStr: path.Join("fixtures", "missing.json") + ": open " + path.Join("fixtures", "missing.json") + ": no such file or directory",
 		},
 		{
 			name:   "one file is missing",
-			in:     []string{"fixtures/create/filter.json", "fixtures/itest/unparseable.json"},
-			errStr: "fixtures/itest/unparseable.json: unexpected end of JSON input",
+			in:     []string{path.Join("fixtures", "create", "filter.json"), path.Join("fixtures", "itest", "unparseable.json")},
+			errStr: path.Join("fixtures", "itest", "unparseable.json") + ": unexpected end of JSON input",
 		},
 	}
 
