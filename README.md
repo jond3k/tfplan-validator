@@ -22,8 +22,8 @@ A simple solution to this is to regularly run a `terraform apply` or a `terragru
 
 So let's first generate a plan for `dev1`
 
-    > cd environments/dev1
-    > terraform plan -out plan.bin
+    ➜ cd environments/dev1
+    ➜ terraform plan -out plan.bin
 
     Terraform will perform the following actions:
 
@@ -40,8 +40,8 @@ So let's first generate a plan for `dev1`
 
 This is a change we want and we'd like to apply it not only to `dev1` but `dev2` and `dev3` so we create a rules file to block any unwanted changes to other environments.
 
-    > terraform show -json plan.bin > plan.json
-    > tfplan-validator create plan.json --rules rules.json
+    ➜ terraform show -json plan.bin > plan.json
+    ➜ tfplan-validator create plan.json --rules rules.json
 
     Created rules file rules.json that allows Terraform to perform the following actions:
 
@@ -49,7 +49,7 @@ This is a change we want and we'd like to apply it not only to `dev1` but `dev2`
 
 Now we can generate plans for every other environment and validate them, starting with `dev1` and `dev2`
 
-    > tfplan-validator check --rules rules.json environments/dev1/plan.json environments/dev2/plan.json
+    ➜ tfplan-validator check --rules rules.json environments/dev1/plan.json environments/dev2/plan.json
 
     The plan environments/dev1/plan.json passes checks and will perform the following actions:
 
@@ -61,12 +61,12 @@ Now we can generate plans for every other environment and validate them, startin
 
 Since both pass the plans can now be safely applied
 
-    > terraform apply -auto-approve environments/dev1/plan.bin
-    > terraform apply -auto-approve environments/dev2/plan.bin
+    ➜ terraform apply -auto-approve environments/dev1/plan.bin
+    ➜ terraform apply -auto-approve environments/dev2/plan.bin
 
 However `dev3` has a resource that would be destroyed by its plan so `tfplan-validator check` rejects it with a non-zero status code
 
-    > tfplan-validator check --rules rules.json environments/dev3/plan.json
+    ➜ tfplan-validator check --rules rules.json environments/dev3/plan.json
 
     The plan environments/dev3/plan.json has been rejected because it has the following actions:
 

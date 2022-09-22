@@ -1,5 +1,5 @@
-install: mod
-	go install ./cmd/tfplan-validator/
+install: mod test
+	go install ./cmd/tfplan-validator
 
 test: mod
 	mkdir -p ./test-results
