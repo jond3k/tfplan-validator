@@ -8,7 +8,7 @@ func TestCreateCmd(t *testing.T) {
 			name: "sucess simple",
 			args: []string{"create", "../fixtures/create/plan.json", "../fixtures/delete-create/plan.json", "../test-results/test-create.json"},
 			files: map[string]string{
-				"../test-results/test-create.json": loadTestData("../fixtures/itest/create-delete-create.json"),
+				"../test-results/test-create.json": loadTestData(otherPath("create-delete-create.json")),
 			},
 			stdout: `Created rules file ../test-results/test-create.json that allows Terraform to perform the following actions:
 

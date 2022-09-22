@@ -41,6 +41,10 @@ func otherPath(name string) string {
 	return path.Join("..", "fixtures", "itest", name)
 }
 
+func resultPath(name string) string {
+	return path.Join("..", "test-results", name)
+}
+
 type cmdCase struct {
 	name   string
 	args   []string

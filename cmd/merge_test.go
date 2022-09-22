@@ -6,12 +6,12 @@ func TestMergeCmd(t *testing.T) {
 	cases := []cmdCase{
 		{
 			name: "success",
-			args: []string{"merge", "../fixtures/create/filter.json", "../fixtures/delete-create/filter.json", "../test-results/test-merge.json"},
-			stdout: `Created rules file ../test-results/test-merge.json that allows Terraform to perform the following actions:
+			args: []string{"merge", filterPath("create"), filterPath("delete-create"), resultPath("test-merge.json")},
+			stdout: `Created rules file ` + resultPath("test-merge.json") + ` that allows Terraform to perform the following actions:
 
   - local_file.foo can be created or replaced (deleted then re-created)`,
 			files: map[string]string{
-				"../test-results/test-merge.json": loadTestData("../fixtures/itest/create-delete-create.json"),
+				resultPath("test-merge.json"): loadTestData(otherPath("create-delete-create.json")),
 			},
 		},
 		{
@@ -26,17 +26,17 @@ Flags:
 		},
 		{
 			name: "missing rules",
-			args: []string{"merge", "../fixtures/update/filter.json", "../fixtures/create/missing.json", "../test-results/test-merge.json"},
+			args: []string{"merge", filterPath("update"), filterPath("missing"), resultPath("test-merge.json")},
 			stdout: `Usage:
   tfplan-validator merge RULES_FILE... OUTPUT_FILE [flags]
 
 Flags:
   -h, --help   help for merge`,
-			stderr: `Error: ../fixtures/create/missing.json: open ../fixtures/create/missing.json: no such file or directory`,
+			stderr: `Error: open ` + filterPath("missing") + `: no such file or directory`,
 		},
 		{
 			name:   "reject contradition",
-			args:   []string{"merge", "../fixtures/create/filter.json", "../fixtures/delete/filter.json", "../test-results/test-merge.json"},
+			args:   []string{"merge", filterPath("create"), filterPath("delete"), resultPath("test-merge.json")},
 			stdout: ``,
 			stderr: `Error: failed to merge filters: contradictory actions: local_file.foo has delete and create`,
 		},

@@ -25,11 +25,20 @@ type PlanFilter struct {
 
 // ReadPlanFilter from a path
 func ReadPlanFilter(path string) (*PlanFilter, error) {
-	if data, err := ioutil.ReadFile(path); err != nil {
+
+	data, err := ioutil.ReadFile(path)
+
+	if err != nil {
 		return nil, err
-	} else {
-		return ParsePlanFilter(data)
 	}
+
+	plan, err := ParsePlanFilter(data)
+
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", path, err)
+	}
+
+	return plan, nil
 }
 
 // ReadPlanFilters from paths
@@ -38,7 +47,7 @@ func ReadPlanFilters(paths []string) ([]*PlanFilter, error) {
 	for i, p := range paths {
 		plan, err := ReadPlanFilter(p)
 		if err != nil {
-			return nil, fmt.Errorf("%s: %w", p, err)
+			return nil, err
 		}
 		plans[i] = plan
 	}

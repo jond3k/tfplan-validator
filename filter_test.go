@@ -173,7 +173,7 @@ func TestReadPlanFilters(t *testing.T) {
 		{
 			name:   "one file is missing",
 			in:     []string{path.Join("fixtures", "create", "filter.json"), path.Join("fixtures", "missing.json")},
-			errStr: path.Join("fixtures", "missing.json") + ": open " + path.Join("fixtures", "missing.json") + ": no such file or directory",
+			errStr: "open " + path.Join("fixtures", "missing.json") + ": no such file or directory",
 		},
 		{
 			name:   "one file is missing",
