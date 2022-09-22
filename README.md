@@ -54,8 +54,8 @@ Now we can safely auto-approve the other plans knowing that the validator will r
     do
       cd ../${dev_env}/
       terragrunt plan -out ./plan
-      terragrunt show ./plan.txt > ./plan.json
-      tfplan-validator check ./plan.json ../rules.json &&
+      terragrunt show ./plan > ./plan.json
+      tfplan-validator check ./plan.json ../rules.json && \
       terraform apply -auto-approve ./plan
     done
 
