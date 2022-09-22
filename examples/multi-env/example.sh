@@ -37,3 +37,12 @@ do
   terraform apply -auto-approve ./plan.bin
   popd
 done
+
+echo 
+echo "[press enter to see the local state changes..]"
+read
+
+git diff infrastructure/dev1/terraform.tfstate
+git diff infrastructure/dev2/terraform.tfstate
+
+echo "Note that dev3 is untouched"
