@@ -9,7 +9,7 @@ A simple way to validate Terraform plans. Designed to assist batch operations on
 
 Run `go install github.com/fautom/tfplan-validator@latest` to use from the command line. You can now use commands like `tfplan-validator create` and `tfplan-validator check`
 
-Read the below example section or see [test/multi-env](test/multi-env) for a working example using local state files that you can run from your command line.
+Read the below example section or see [test/multi-env](test/multi-env) for working code that uses local state files that you can run from your command line.
 
 To use `tfplan-validator` as a library check the command implementations in [internal/app/tfplan-validator](internal/app/tfplan-validator)
 

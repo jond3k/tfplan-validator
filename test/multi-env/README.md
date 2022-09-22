@@ -1,6 +1,6 @@
 # tfplan-validator multi-env example
 
-This folder contains a working [example](test/multi-env/example.sh) of plan validation where all environments are out of date with the code in `modules/environment`.
+This folder contains a working [example](example.sh) of plan validation where all environments are out of date with the code in `modules/environment`.
 
 Checking `infrastructure/dev1` and `infrastructure/dev2` with `rules.json` succeeds as they have identical signatures but `infrastructure/dev3` fails as updates will lead to unwanted changes, in this case deletions. 
 
