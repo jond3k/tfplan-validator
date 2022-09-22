@@ -1,0 +1,4 @@
+infrastructure/dev1/bar.txt
+infrastructure/dev1/terraform.tfstate.backup
+infrastructure/dev2/bar.txt
+infrastructure/dev2/terraform.tfstate.backup
