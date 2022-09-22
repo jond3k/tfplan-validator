@@ -6,11 +6,11 @@ func TestCreateCmd(t *testing.T) {
 	cases := []cmdCase{
 		{
 			name: "sucess simple",
-			args: []string{"create", "../fixtures/create/plan.json", "../fixtures/delete-create/plan.json", "../test-results/test-create.json"},
+			args: []string{"create", planPath("create"), planPath("delete-create"), resultPath("test-create.json")},
 			files: map[string]string{
-				"../test-results/test-create.json": loadTestData(otherPath("create-delete-create.json")),
+				resultPath("test-create.json"): loadTestData(otherPath("create-delete-create.json")),
 			},
-			stdout: `Created rules file ../test-results/test-create.json that allows Terraform to perform the following actions:
+			stdout: `Created rules file ` + resultPath("test-create.json") + ` that allows Terraform to perform the following actions:
 
   - local_file.foo can be created or replaced (deleted then re-created)`,
 		},
