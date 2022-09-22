@@ -1,4 +1,5 @@
 build: mod
+	mkdir -p ./bin
 	go build -o ./bin/tfplan-validator ./cmd/tfplan-validator/
 
 install: mod
