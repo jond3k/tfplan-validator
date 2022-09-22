@@ -5,8 +5,10 @@ test: mod
 	gotestsum --format=short-verbose $(TEST) $(TESTARGS)
 
 coverage: mod
-	gotestsum --format=short-verbose -- . ./cmd -coverprofile=cover.out
-	go tool cover -html=cover.out
+	gotestsum --format=short-verbose -- . ./cmd -coverprofile=coverage.txt -covermode=atomic
+
+coverage-html: coverage
+	go tool cover -html=coverage.txt
 
 clear:
 	rm bin/tfplan_validator
