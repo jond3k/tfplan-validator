@@ -25,6 +25,8 @@ jobs:
     - run: make test
   coverage:
     runs-on: ubuntu-latest
+    env:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     needs:
     - test
     steps:
