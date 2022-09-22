@@ -91,10 +91,10 @@ func runCheckCmd(cmd *cobra.Command, args []string) error {
 
 func newCheckCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "check PLAN_FILE... [--rules RULES_FILE]",
+		Use:   "check PLAN_FILE... --rules RULES_FILE",
 		Short: "Validate one or more plan using a rule file",
 		RunE:  runCheckCmd,
 	}
-	cmd.Flags().String("rules", "./rules.json", "The rules file to use")
+	cmd.Flags().String("rules", "", "The rules file to use")
 	return cmd
 }
