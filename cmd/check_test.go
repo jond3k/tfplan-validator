@@ -64,7 +64,7 @@ Flags:
 Flags:
   -h, --help           help for check
       --rules string   The rules file to use`,
-			stderr: `Error: failed to read rules: open ../fixtures/missing/filter.json: no such file or directory`,
+			stderr: `Error: failed to read rules: open ` + filterPath("missing") + `: no such file or directory`,
 		},
 		{
 			name: "invalid plan",
