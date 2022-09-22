@@ -1,2 +1,4 @@
 .terraform
-plan.bin
+infrastructure/**/plan.bin
+infrastructure/**/plan.json
+./rules.json

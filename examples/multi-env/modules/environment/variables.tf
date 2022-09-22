@@ -5,5 +5,5 @@ variable "enable_foo" {
 
 variable "enable_bar" {
   description = "Determines if this environment has a bar"
-  default     = false
+  default     = true
 }

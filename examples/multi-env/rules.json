@@ -1,0 +1,8 @@
+{
+  "format_version": "0.1",
+  "allowed_actions": {
+    "module.environment.local_file.bar[0]": [
+      "create"
+    ]
+  }
+}
