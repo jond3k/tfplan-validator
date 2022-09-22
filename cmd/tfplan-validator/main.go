@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/fautom/tfplan-validator/cmd"
+	cmd "github.com/fautom/tfplan-validator/internal/app/tfplan-validator"
 )
 
 func main() {

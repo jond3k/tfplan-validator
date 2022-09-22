@@ -1,7 +1,3 @@
-build: mod
-	mkdir -p ./bin
-	go build -o ./bin/tfplan-validator ./cmd/tfplan-validator/
-
 install: mod
 	go install ./cmd/tfplan-validator/
 
@@ -11,7 +7,7 @@ test: mod
 
 coverage: mod
 	mkdir -p ./test-results
-	gotestsum --format=short-verbose -- . ./cmd -coverprofile=coverage.txt -covermode=atomic
+	gotestsum --format=short-verbose -- . ./internal/app/tfplan-validator -coverprofile=coverage.txt -covermode=atomic
 
 coverage-html: coverage
 	go tool cover -html=coverage.txt

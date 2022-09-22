@@ -30,19 +30,19 @@ func loadTestData(file string) string {
 }
 
 func planPath(typ string) string {
-	return path.Join("..", "examples", "fixtures", typ, "plan.json")
+	return path.Join("..", "..", "..", "examples", "fixtures", typ, "plan.json")
 }
 
 func filterPath(typ string) string {
-	return path.Join("..", "examples", "fixtures", typ, "filter.json")
+	return path.Join("..", "..", "..", "examples", "fixtures", typ, "filter.json")
 }
 
 func otherPath(name string) string {
-	return path.Join("..", "examples", "fixtures", "itest", name)
+	return path.Join("..", "..", "..", "examples", "fixtures", "itest", name)
 }
 
 func resultPath(name string) string {
-	return path.Join("..", "test-results", name)
+	return path.Join("..", "..", "..", "test-results", name)
 }
 
 type cmdCase struct {
