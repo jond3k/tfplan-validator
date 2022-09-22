@@ -9,6 +9,18 @@ import (
 	tfjson "github.com/hashicorp/terraform-json"
 )
 
+func planPath(typ string) string {
+	return path.Join("examples", "fixtures", typ, "plan.json")
+}
+
+func filterPath(typ string) string {
+	return path.Join("examples", "fixtures", typ, "filter.json")
+}
+
+func otherPath(name string) string {
+	return path.Join("examples", "fixtures", "itest", name)
+}
+
 func readPlansP(paths []string) []*tfjson.Plan {
 	if plans, err := ReadPlans(paths); err != nil {
 		panic(err)
@@ -34,7 +46,7 @@ func TestNewFilterFromPlans(t *testing.T) {
 		},
 		{
 			name: "create",
-			in:   readPlansP([]string{path.Join("fixtures", "create", "plan.json")}),
+			in:   readPlansP([]string{planPath("create")}),
 			expected: &PlanFilter{
 				FormatVersion: CurrentFormatVersion,
 				AllowedActions: map[Address][]Action{
@@ -44,7 +56,7 @@ func TestNewFilterFromPlans(t *testing.T) {
 		},
 		{
 			name: "create-delete",
-			in:   readPlansP([]string{path.Join("fixtures", "create-delete", "plan.json")}),
+			in:   readPlansP([]string{planPath("create-delete")}),
 			expected: &PlanFilter{
 				FormatVersion: CurrentFormatVersion,
 				AllowedActions: map[Address][]Action{
@@ -54,7 +66,7 @@ func TestNewFilterFromPlans(t *testing.T) {
 		},
 		{
 			name: "delete",
-			in:   readPlansP([]string{path.Join("fixtures", "delete", "plan.json")}),
+			in:   readPlansP([]string{planPath("delete")}),
 			expected: &PlanFilter{
 				FormatVersion: CurrentFormatVersion,
 				AllowedActions: map[Address][]Action{
@@ -64,7 +76,7 @@ func TestNewFilterFromPlans(t *testing.T) {
 		},
 		{
 			name: "delete-create",
-			in:   readPlansP([]string{path.Join("fixtures", "delete-create", "plan.json")}),
+			in:   readPlansP([]string{planPath("delete-create")}),
 			expected: &PlanFilter{
 				FormatVersion: CurrentFormatVersion,
 				AllowedActions: map[Address][]Action{
@@ -74,7 +86,7 @@ func TestNewFilterFromPlans(t *testing.T) {
 		},
 		{
 			name: "update",
-			in:   readPlansP([]string{path.Join("fixtures", "update", "plan.json")}),
+			in:   readPlansP([]string{planPath("update")}),
 			expected: &PlanFilter{
 				FormatVersion: CurrentFormatVersion,
 				AllowedActions: map[Address][]Action{
@@ -154,7 +166,7 @@ func TestReadPlanFilters(t *testing.T) {
 	}{
 		{
 			name: "load two files",
-			in:   []string{path.Join("fixtures", "create", "filter.json"), path.Join("fixtures", "update", "filter.json")},
+			in:   []string{filterPath("create"), filterPath("update")},
 			expected: []*PlanFilter{
 				{
 					FormatVersion: CurrentFormatVersion,
@@ -172,13 +184,13 @@ func TestReadPlanFilters(t *testing.T) {
 		},
 		{
 			name:   "one file is missing",
-			in:     []string{path.Join("fixtures", "create", "filter.json"), path.Join("fixtures", "missing.json")},
-			errStr: "open " + path.Join("fixtures", "missing.json") + ": no such file or directory",
+			in:     []string{filterPath("create"), filterPath("missing")},
+			errStr: "open " + filterPath("missing") + ": no such file or directory",
 		},
 		{
 			name:   "one file is missing",
-			in:     []string{path.Join("fixtures", "create", "filter.json"), path.Join("fixtures", "itest", "unparseable.json")},
-			errStr: path.Join("fixtures", "itest", "unparseable.json") + ": unexpected end of JSON input",
+			in:     []string{filterPath("create"), otherPath("unparseable.json")},
+			errStr: otherPath("unparseable.json") + ": unexpected end of JSON input",
 		},
 	}
 
