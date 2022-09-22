@@ -5,6 +5,15 @@
 
 A simple way to validate Terraform plans. Designed to assist batch operations on large numbers of similar state files.
 
+## Getting started
+
+Run `go install github.com/fautom/tfplan-validator@latest` to use from the command line. You can now use commands like `tfplan-validator create` and `tfplan-validator check`
+
+Read the below example section or see [test/multi-env](test/multi-env) for a working example using local state files that you can run from your command line.
+
+To use `tfplan-validator` as a library check the command implementations in [internal/app/tfplan-validator](internal/app/tfplan-validator)
+
+
 ## Example
 
 Suppose we have multiple development environments all created from the same Terraform module as our production environment. This means developers do not interfere with each others work and deployments are predictable but over time these environments will diverge due to changes to branches, variables, or state drift from manual changes.
@@ -78,7 +87,7 @@ It is now up to the developer to decide what to do:
 1. Fix the code so that the resource is not deleted
 1. Apply the change anyway, destroying the resource
 
-See [examples/multi-env/example.sh](examples/multi-env/example.sh) for a working example using local state files that you can run from your command line.
+See [test/multi-env](test/multi-env) for a working example using local state files that you can run from your command line.
 
 ## Related projects
 

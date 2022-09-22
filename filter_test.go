@@ -10,15 +10,15 @@ import (
 )
 
 func planPath(typ string) string {
-	return path.Join("examples", "fixtures", typ, "plan.json")
+	return path.Join("test", "fixtures", typ, "plan.json")
 }
 
 func filterPath(typ string) string {
-	return path.Join("examples", "fixtures", typ, "filter.json")
+	return path.Join("test", "fixtures", typ, "filter.json")
 }
 
 func otherPath(name string) string {
-	return path.Join("examples", "fixtures", "itest", name)
+	return path.Join("test", "fixtures", "itest", name)
 }
 
 func readPlansP(paths []string) []*tfjson.Plan {
