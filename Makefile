@@ -1,5 +1,8 @@
 build: mod
-	go build -o ./bin/tfplan_validator cmd/tfplan_validator/main.go
+	go build -o ./bin/tfplan-validator ./cmd/tfplan-validator/
+
+install: mod
+	go install ./cmd/tfplan-validator/
 
 test: mod
 	mkdir -p ./test-results
@@ -12,12 +15,8 @@ coverage: mod
 coverage-html: coverage
 	go tool cover -html=coverage.txt
 
-clear:
-	rm bin/tfplan_validator
-	rm test-results/*.json
-
 mod:
 	go install gotest.tools/gotestsum@latest
 	go mod download && go mod verify && go mod tidy
 
-.PHONY: build test coverage mod 
+.PHONY: build install test coverage coverage-html mod
