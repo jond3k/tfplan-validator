@@ -108,7 +108,7 @@ func NewFilterFromPlan(plan *tfjson.Plan) (*PlanFilter, error) {
 		address := Address(rc.Address)
 
 		if current := allowed[address]; current != nil {
-			return nil, fmt.Errorf("duplicate address in plan: %s", current)
+			return nil, fmt.Errorf("duplicate address in plan: %s %s", address, current)
 		}
 
 		allowed[address] = []Action{ConvertAction(&rc.Change.Actions)}

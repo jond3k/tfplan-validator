@@ -162,6 +162,11 @@ func TestNewFilterFromPlans(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:   "duplicate change in plan",
+			in:     readPlansP([]string{otherPath("plan-duplicate-address.json")}),
+			errStr: "duplicate address in plan: local_file.foo [create]",
+		},
 	}
 
 	for _, tc := range cases {
@@ -218,6 +223,79 @@ func TestReadPlanFilters(t *testing.T) {
 			errStr := makeErrStr(err)
 			if !reflect.DeepEqual(tc.expected, actual) || tc.errStr != errStr {
 				t.Fatalf("expected:\n\n%s\ngot:\n\n%s\n\nexpected err:%s\n\ngot err: %s\n", spew.Sdump(tc.expected), spew.Sdump(actual), tc.errStr, errStr)
+			}
+		})
+	}
+}
+
+// func (f *PlanFilter) HasAction(address Address, action Action) bool {
+// 	allowed := f.AllowedActions[address]
+
+// 	if allowed == nil {
+// 		return false
+// 	}
+
+// 	for _, has := range allowed {
+// 		if action == has {
+// 			return true
+// 		}
+// 	}
+
+// 	return false
+// }
+
+func TestFilterHasAction(t *testing.T) {
+	cases := []struct {
+		name     string
+		self     *PlanFilter
+		address  Address
+		action   Action
+		expected bool
+	}{
+		{
+			name: "doesn't have address",
+			self: &PlanFilter{
+
+				FormatVersion:  CurrentFormatVersion,
+				AllowedActions: map[Address][]Action{},
+			},
+			address:  "a.b.c",
+			action:   ActionCreate,
+			expected: false,
+		},
+		{
+			name: "has address, doesn't have action",
+			self: &PlanFilter{
+
+				FormatVersion: CurrentFormatVersion,
+				AllowedActions: map[Address][]Action{
+					"a.b.c": {ActionUpdate, ActionDelete},
+				},
+			},
+			address:  "a.b.c",
+			action:   ActionCreate,
+			expected: false,
+		},
+		{
+			name: "has action",
+			self: &PlanFilter{
+
+				FormatVersion: CurrentFormatVersion,
+				AllowedActions: map[Address][]Action{
+					"a.b.c": {ActionUpdate, ActionCreate},
+				},
+			},
+			address:  "a.b.c",
+			action:   ActionCreate,
+			expected: true,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			actual := tc.self.HasAction(tc.address, tc.action)
+			if !reflect.DeepEqual(tc.expected, actual) {
+				t.Fatalf("expected:\n\n%s\ngot:\n\n%s\n\n", spew.Sdump(tc.expected), spew.Sdump(actual))
 			}
 		})
 	}
