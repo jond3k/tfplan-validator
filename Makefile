@@ -2,11 +2,9 @@ install: mod test
 	go install ./cmd/tfplan-validator
 
 test: mod
-	mkdir -p ./test-results
 	gotestsum --format=short-verbose $(TEST) $(TESTARGS)
 
 coverage: mod
-	mkdir -p ./test-results
 	gotestsum --format=short-verbose -- . ./internal/app/tfplan-validator -coverprofile=coverage.txt -covermode=atomic
 
 coverage-html: coverage
