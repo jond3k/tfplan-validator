@@ -91,5 +91,5 @@ See [test/multi-env](test/multi-env) for a working example using local state fil
 
 ## Related projects
 
-* [GoogleCloudPlatform/terraform-validator](https://github.com/GoogleCloudPlatform/terraform-validator)
+* [GoogleCloudPlatform/terraform-validator](https://github.com/GoogleCloudPlatform/terraform-validator) is a similar concept but for enforcing security policies on Google Cloud Platform
 
