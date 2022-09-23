@@ -54,7 +54,7 @@ This is a change we want and we'd like to apply it not only to `dev1` but `dev2`
 
     Created rules file rules.json that allows Terraform to perform the following actions:
 
-    - module.environment.local_file.bar[0] can be created
+    + module.environment.local_file.bar[0] can be created
 
 Now we can generate plans for every other environment and validate them, starting with `dev1` and `dev2`
 
@@ -62,11 +62,11 @@ Now we can generate plans for every other environment and validate them, startin
 
     The plan environments/dev1/plan.json passes checks and will perform the following actions:
 
-    - module.environment.local_file.bar[0] will be created
+    + module.environment.local_file.bar[0] will be created
 
     The plan environments/dev2/plan.json passes checks and will perform the following actions:
 
-    - module.environment.local_file.bar[0] will be created
+    + module.environment.local_file.bar[0] will be created
 
 Since both pass the plans can now be safely applied
 
@@ -79,7 +79,7 @@ However `dev3` has a resource that would be destroyed by its plan so `tfplan-val
 
     The plan environments/dev3/plan.json has been rejected because it has the following actions:
 
-    - module.environment.local_file.foo[0] cannot be deleted
+    ! module.environment.local_file.foo[0] cannot be deleted
 
 It is now up to the developer to decide what to do:
 
