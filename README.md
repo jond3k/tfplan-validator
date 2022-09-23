@@ -2,6 +2,7 @@
 
 [![codecov](https://codecov.io/gh/fautom/tfplan-validator/branch/main/graph/badge.svg?token=1P6A5WBXOT)](https://codecov.io/gh/fautom/tfplan-validator)
 ![build](https://github.com/fautom/tfplan-validator/actions/workflows/test.yaml/badge.svg)
+[![Go Report Card](https://goreportcard.com/badge/github.com/fautom/tfplan-validator)](https://goreportcard.com/report/github.com/fautom/tfplan-validator)
 
 A simple way to validate Terraform plans. Designed to assist batch operations on large numbers of similar state files.
 
