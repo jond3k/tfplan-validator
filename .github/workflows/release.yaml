@@ -1,0 +1,15 @@
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        type: string
+        description: Semantic version
+        required: true
+name: release
+jobs:
+  greet:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/setup-go@v3
+    - uses: actions/checkout@v3
+    - run: RELASE="${{ inputs.release }}" make release
