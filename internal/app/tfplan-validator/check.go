@@ -16,13 +16,13 @@ func printCheckReject(cmd *cobra.Command, results map[string]*tfpv.FilterResults
 			fmt.Fprintf(out, "The plan %s has been rejected because it has the following actions:\n\n", path)
 			for addr, action := range result.Errors {
 				if allowedActions := result.PlanFilter.AllowedActions[addr]; allowedActions == nil {
-					fmt.Fprintf(out, "  - %s cannot be %s\n", addr, action.Pretty())
+					fmt.Fprintf(out, "  ! %s cannot be %s\n", addr, action.Pretty())
 				} else {
 					allowedPretty := make([]string, len(allowedActions))
 					for i, allowedAction := range allowedActions {
 						allowedPretty[i] = allowedAction.Pretty()
 					}
-					fmt.Fprintf(out, "  - %s cannot be %s only %s\n", addr, action.Pretty(), strings.Join(allowedPretty, " or "))
+					fmt.Fprintf(out, "  ! %s cannot be %s only %s\n", addr, action.Pretty(), strings.Join(allowedPretty, " or "))
 				}
 			}
 		}
@@ -36,7 +36,8 @@ func printCheckAccept(cmd *cobra.Command, results map[string]*tfpv.FilterResults
 		if result.HasChanges() {
 			fmt.Fprintf(out, "The plan %s passes checks and will perform the following actions:\n\n", path)
 			for addr, action := range result.Changes {
-				fmt.Fprintf(out, "  - %s will be %s\n", addr, action.Pretty())
+				symbol := formatSymbolsForActions([]tfpv.Action{action})
+				fmt.Fprintf(out, "  %s %s will be %s\n", symbol, addr, action.Pretty())
 			}
 		}
 	}

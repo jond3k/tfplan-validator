@@ -12,7 +12,7 @@ func TestCreateCmd(t *testing.T) {
 			},
 			stdout: `Created rules file ` + resultPath("test-create.json") + ` that allows Terraform to perform the following actions:
 
-  - local_file.foo can be created or replaced (deleted then re-created)`,
+  -+ local_file.foo can be created or replaced (deleted then re-created)`,
 		},
 
 		{

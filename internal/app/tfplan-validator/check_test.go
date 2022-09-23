@@ -7,11 +7,39 @@ import (
 func TestCheckCmd(t *testing.T) {
 	cases := []cmdCase{
 		{
-			name: "success",
+			name: "create",
 			args: []string{"check", planPath("create"), "--rules", filterPath("create")},
 			stdout: `The plan ` + planPath("create") + ` passes checks and will perform the following actions:
 
-  - local_file.foo will be created`,
+  + local_file.foo will be created`,
+		},
+		{
+			name: "delete",
+			args: []string{"check", planPath("delete"), "--rules", filterPath("delete")},
+			stdout: `The plan ` + planPath("delete") + ` passes checks and will perform the following actions:
+
+  - local_file.foo will be deleted`,
+		},
+		{
+			name: "update",
+			args: []string{"check", planPath("update"), "--rules", filterPath("update")},
+			stdout: `The plan ` + planPath("update") + ` passes checks and will perform the following actions:
+
+  ~ google_project_iam_policy.project will be updated`,
+		},
+		{
+			name: "delete-create",
+			args: []string{"check", planPath("delete-create"), "--rules", filterPath("delete-create")},
+			stdout: `The plan ` + planPath("delete-create") + ` passes checks and will perform the following actions:
+
+  -+ local_file.foo will be replaced (deleted then re-created)`,
+		},
+		{
+			name: "create-delete",
+			args: []string{"check", planPath("create-delete"), "--rules", filterPath("create-delete")},
+			stdout: `The plan ` + planPath("create-delete") + ` passes checks and will perform the following actions:
+
+  -+ local_file.foo will be replaced (re-created before deletion)`,
 		},
 		{
 			name:   "failure known resource",
@@ -19,7 +47,7 @@ func TestCheckCmd(t *testing.T) {
 			stdout: ``,
 			stderr: `The plan ` + planPath("create") + ` has been rejected because it has the following actions:
 
-  - local_file.foo cannot be created only deleted
+  ! local_file.foo cannot be created only deleted
 
 Error: invalid plan`,
 		},
@@ -29,7 +57,7 @@ Error: invalid plan`,
 			stdout: ``,
 			stderr: `The plan ` + planPath("create") + ` has been rejected because it has the following actions:
 
-  - local_file.foo cannot be created
+  ! local_file.foo cannot be created
 
 Error: invalid plan`,
 		},

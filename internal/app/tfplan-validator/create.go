@@ -13,10 +13,11 @@ func printPlanFilterLines(cmd *cobra.Command, rulesPath string, filter *tfpv.Pla
 	out := cmd.OutOrStdout()
 	for addr, actions := range filter.AllowedActions {
 		pretty := make([]string, len(actions))
+		symbol := formatSymbolsForActions(actions)
 		for i, action := range actions {
 			pretty[i] = action.Pretty()
 		}
-		fmt.Fprintf(out, "  - %s can be %s\n", addr, strings.Join(pretty, " or "))
+		fmt.Fprintf(out, "  %s %s can be %s\n", symbol, addr, strings.Join(pretty, " or "))
 	}
 }
 

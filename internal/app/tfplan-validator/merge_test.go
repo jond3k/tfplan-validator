@@ -9,7 +9,7 @@ func TestMergeCmd(t *testing.T) {
 			args: []string{"merge", filterPath("create"), filterPath("delete-create"), resultPath("test-merge.json")},
 			stdout: `Created rules file ` + resultPath("test-merge.json") + ` that allows Terraform to perform the following actions:
 
-  - local_file.foo can be created or replaced (deleted then re-created)`,
+  -+ local_file.foo can be created or replaced (deleted then re-created)`,
 			files: map[string]string{
 				resultPath("test-merge.json"): loadTestData(otherPath("create-delete-create.json")),
 			},
