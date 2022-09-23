@@ -53,7 +53,7 @@ Flags:
 Flags:
   -h, --help           help for check
       --rules string   The rules file to use`,
-			stderr: "Error: failed to load plans: " + planPath("missing") + ": open " + planPath("missing") + ": no such file or directory",
+			stderr: "Error: failed to load plans: open " + planPath("missing") + ": no such file or directory",
 		},
 		{
 			name: "missing filter",
@@ -68,7 +68,7 @@ Flags:
 		},
 		{
 			name: "invalid plan",
-			args: []string{"check", otherPath("invalid-plan.json"), "--rules", filterPath("update")},
+			args: []string{"check", otherPath("plan-invalid-actions.json"), "--rules", filterPath("update")},
 			stdout: `Usage:
   tfplan-validator check PLAN_FILE... --rules RULES_FILE [flags]
 
