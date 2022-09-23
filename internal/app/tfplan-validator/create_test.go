@@ -5,7 +5,7 @@ import "testing"
 func TestCreateCmd(t *testing.T) {
 	cases := []cmdCase{
 		{
-			name: "sucess simple",
+			name: "success simple",
 			args: []string{"create", planPath("create"), planPath("delete-create"), "--rules", resultPath("test-create.json")},
 			files: map[string]string{
 				resultPath("test-create.json"): loadTestData(otherPath("create-delete-create.json")),

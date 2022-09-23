@@ -84,7 +84,7 @@ func (tc *cmdCase) run(t *testing.T) {
 		expected := strings.Join(expectedParts, SEPARATOR)
 
 		actualParts := []string{"stdout", stdout, "stderr", stderr}
-		for k, _ := range tc.files {
+		for k := range tc.files {
 			actualParts = append(actualParts, k, loadTestData(k))
 		}
 		actual := strings.Join(actualParts, SEPARATOR)
