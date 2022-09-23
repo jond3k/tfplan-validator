@@ -34,7 +34,7 @@ func TestNewFilterFromPlans(t *testing.T) {
 		name     string
 		in       []*tfjson.Plan
 		expected *PlanFilter
-		err      error
+		errStr   string
 	}{
 		{
 			name: "empty",
@@ -95,6 +95,24 @@ func TestNewFilterFromPlans(t *testing.T) {
 			},
 		},
 		{
+			name: "missing plan",
+			in: []*tfjson.Plan{
+				{
+					ResourceChanges: []*tfjson.ResourceChange{
+						{
+							Mode:    tfjson.ManagedResourceMode,
+							Address: "a.b.c",
+							Change: &tfjson.Change{
+								Actions: tfjson.Actions{"invalid"},
+							},
+						},
+					},
+				},
+			},
+			expected: nil,
+			errStr:   "unrecognized action in plan: [invalid]",
+		},
+		{
 			name: "ignore data",
 			in: []*tfjson.Plan{
 				{
@@ -148,10 +166,10 @@ func TestNewFilterFromPlans(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			if actual, err := NewFilterFromPlans(tc.in); err != nil {
-				t.Fatal(err)
-			} else if !reflect.DeepEqual(tc.expected, actual) {
-				t.Fatalf("expected:\n\n%s\ngot:\n\n%s\n", spew.Sdump(tc.expected), spew.Sdump(actual))
+			actual, err := NewFilterFromPlans(tc.in)
+			errStr := makeErrStr(err)
+			if !reflect.DeepEqual(tc.expected, actual) || tc.errStr != errStr {
+				t.Fatalf("expected:\n\n%s\ngot:\n\n%s\n\nexpected err:%s\n\ngot err: %s\n", spew.Sdump(tc.expected), spew.Sdump(actual), tc.errStr, errStr)
 			}
 		})
 	}
