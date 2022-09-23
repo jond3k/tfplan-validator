@@ -16,13 +16,9 @@ mod:
 	go install gotest.tools/gotestsum@latest
 	go mod download && go mod verify && go mod tidy
 
-release-check:
-	$(if $(call equals,0,$(shell git diff-index --quiet HEAD; echo $$?)),, \
-				$(error Cannot make a release if there are uncommitted changes $?) \
-		)
-
-release: mod test release-check
+release: mod test
+	@if [ ! -z "$$(git status --porcelain)" ]; then echo "ERROR: uncommitted changes in repo" && exit 1; fi
 	echo git tag ${RELEASE}
 	echo git push origin ${RELEASE}
 
-.PHONY: build install test coverage coverage-html mod release release-check
+.PHONY: build install test coverage coverage-html mod release
