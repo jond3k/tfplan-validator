@@ -1,5 +1,3 @@
-IS_DEV=$(shell git diff --exit-code >/dev/null 2>/dev/null 1>&2 || echo yes)
-
 install: mod test
 	go install ./cmd/tfplan-validator
 
