@@ -1,3 +1,5 @@
+IS_DEV=$(shell git diff --exit-code >/dev/null 2>/dev/null 1>&2 || echo yes)
+
 install: mod test
 	go install ./cmd/tfplan-validator
 
@@ -14,4 +16,13 @@ mod:
 	go install gotest.tools/gotestsum@latest
 	go mod download && go mod verify && go mod tidy
 
-.PHONY: build install test coverage coverage-html mod
+release-check:
+	$(if $(call equals,0,$(shell git diff-index --quiet HEAD; echo $$?)),, \
+				$(error Cannot make a release if there are uncommitted changes $?) \
+		)
+
+release: mod test release-check
+	echo git tag ${RELEASE}
+	echo git push origin ${RELEASE}
+
+.PHONY: build install test coverage coverage-html mod release release-check
