@@ -5,7 +5,7 @@ test: mod
 	gotestsum --format=short-verbose $(TEST) $(TESTARGS)
 
 coverage: mod
-	gotestsum --format=short-verbose -- . ./internal/app/tfplan-validator -coverprofile=coverage.txt -covermode=atomic
+	gotestsum --format=short-verbose -- "./..." -coverprofile=coverage.txt -covermode=atomic
 
 lint:
 	gofmt -s -w .
