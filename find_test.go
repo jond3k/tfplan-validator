@@ -28,6 +28,11 @@ func TestFindWorkspaces(t *testing.T) {
 			errStr:   "file does not exist",
 		},
 		{
+			name:     "ignore-empty-line",
+			in:       []string{""},
+			expected: []string{},
+		},
+		{
 			name:     "match-exact",
 			in:       []string{"main_only/main.tf"},
 			expected: []string{"main_only"},
