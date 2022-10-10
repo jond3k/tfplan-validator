@@ -6,7 +6,7 @@ func TestCreateCmd(t *testing.T) {
 	cases := []cmdCase{
 		{
 			name: "success simple",
-			args: []string{"create", planPath("create"), planPath("delete-create"), "--rules", resultPath("test-create.json")},
+			args: []string{"rules", "create", planPath("create"), planPath("delete-create"), "--rules", resultPath("test-create.json")},
 			files: map[string]string{
 				resultPath("test-create.json"): loadTestData(otherPath("create-delete-create.json")),
 			},
@@ -17,9 +17,9 @@ func TestCreateCmd(t *testing.T) {
 
 		{
 			name: "missing args",
-			args: []string{"create"},
+			args: []string{"rules", "create"},
 			stdout: `Usage:
-  tfplan-validator create PLAN_FILE... [--rules RULES_FILE] [flags]
+  tfplan-validator rules create PLAN_FILE... [--rules RULES_FILE] [flags]
 
 Flags:
   -h, --help           help for create

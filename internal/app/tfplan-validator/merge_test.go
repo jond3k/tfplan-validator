@@ -6,7 +6,7 @@ func TestMergeCmd(t *testing.T) {
 	cases := []cmdCase{
 		{
 			name: "success",
-			args: []string{"merge", filterPath("create"), filterPath("delete-create"), resultPath("test-merge.json")},
+			args: []string{"rules", "merge", filterPath("create"), filterPath("delete-create"), resultPath("test-merge.json")},
 			stdout: `Created rules file ` + resultPath("test-merge.json") + ` that allows Terraform to perform the following actions:
 
   -+ local_file.foo can be created or replaced (deleted then re-created)`,
@@ -16,9 +16,9 @@ func TestMergeCmd(t *testing.T) {
 		},
 		{
 			name: "missing args",
-			args: []string{"merge"},
+			args: []string{"rules", "merge"},
 			stdout: `Usage:
-  tfplan-validator merge RULES_FILE... OUTPUT_FILE [flags]
+  tfplan-validator rules merge RULES_FILE... OUTPUT_FILE [flags]
 
 Flags:
   -h, --help   help for merge`,
@@ -26,9 +26,9 @@ Flags:
 		},
 		{
 			name: "missing rules",
-			args: []string{"merge", filterPath("update"), filterPath("missing"), resultPath("test-merge.json")},
+			args: []string{"rules", "merge", filterPath("update"), filterPath("missing"), resultPath("test-merge.json")},
 			stdout: `Usage:
-  tfplan-validator merge RULES_FILE... OUTPUT_FILE [flags]
+  tfplan-validator rules merge RULES_FILE... OUTPUT_FILE [flags]
 
 Flags:
   -h, --help   help for merge`,
@@ -36,7 +36,7 @@ Flags:
 		},
 		{
 			name:   "reject contradition",
-			args:   []string{"merge", filterPath("create"), filterPath("delete"), resultPath("test-merge.json")},
+			args:   []string{"rules", "merge", filterPath("create"), filterPath("delete"), resultPath("test-merge.json")},
 			stdout: ``,
 			stderr: `Error: failed to merge filters: contradictory actions: local_file.foo has delete and create`,
 		},

@@ -8,42 +8,42 @@ func TestCheckCmd(t *testing.T) {
 	cases := []cmdCase{
 		{
 			name: "create",
-			args: []string{"check", planPath("create"), "--rules", filterPath("create")},
+			args: []string{"rules", "check", planPath("create"), "--rules", filterPath("create")},
 			stdout: `The plan ` + planPath("create") + ` passes checks and will perform the following actions:
 
   + local_file.foo will be created`,
 		},
 		{
 			name: "delete",
-			args: []string{"check", planPath("delete"), "--rules", filterPath("delete")},
+			args: []string{"rules", "check", planPath("delete"), "--rules", filterPath("delete")},
 			stdout: `The plan ` + planPath("delete") + ` passes checks and will perform the following actions:
 
   - local_file.foo will be deleted`,
 		},
 		{
 			name: "update",
-			args: []string{"check", planPath("update"), "--rules", filterPath("update")},
+			args: []string{"rules", "check", planPath("update"), "--rules", filterPath("update")},
 			stdout: `The plan ` + planPath("update") + ` passes checks and will perform the following actions:
 
   ~ google_project_iam_policy.project will be updated`,
 		},
 		{
 			name: "delete-create",
-			args: []string{"check", planPath("delete-create"), "--rules", filterPath("delete-create")},
+			args: []string{"rules", "check", planPath("delete-create"), "--rules", filterPath("delete-create")},
 			stdout: `The plan ` + planPath("delete-create") + ` passes checks and will perform the following actions:
 
   -+ local_file.foo will be replaced (deleted then re-created)`,
 		},
 		{
 			name: "create-delete",
-			args: []string{"check", planPath("create-delete"), "--rules", filterPath("create-delete")},
+			args: []string{"rules", "check", planPath("create-delete"), "--rules", filterPath("create-delete")},
 			stdout: `The plan ` + planPath("create-delete") + ` passes checks and will perform the following actions:
 
   -+ local_file.foo will be replaced (re-created before deletion)`,
 		},
 		{
 			name:   "failure known resource",
-			args:   []string{"check", planPath("create"), "--rules", filterPath("delete")},
+			args:   []string{"rules", "check", planPath("create"), "--rules", filterPath("delete")},
 			stdout: ``,
 			stderr: `The plan ` + planPath("create") + ` has been rejected because it has the following actions:
 
@@ -53,7 +53,7 @@ Error: invalid plan`,
 		},
 		{
 			name:   "unknown resource",
-			args:   []string{"check", planPath("create"), "--rules", filterPath("update")},
+			args:   []string{"rules", "check", planPath("create"), "--rules", filterPath("update")},
 			stdout: ``,
 			stderr: `The plan ` + planPath("create") + ` has been rejected because it has the following actions:
 
@@ -63,9 +63,9 @@ Error: invalid plan`,
 		},
 		{
 			name: "missing args",
-			args: []string{"check"},
+			args: []string{"rules", "check"},
 			stdout: `Usage:
-  tfplan-validator check PLAN_FILE... --rules RULES_FILE [flags]
+  tfplan-validator rules check PLAN_FILE... --rules RULES_FILE [flags]
 
 Flags:
   -h, --help           help for check
@@ -74,9 +74,9 @@ Flags:
 		},
 		{
 			name: "missing plan",
-			args: []string{"check", planPath("missing"), "--rules", filterPath("update")},
+			args: []string{"rules", "check", planPath("missing"), "--rules", filterPath("update")},
 			stdout: `Usage:
-  tfplan-validator check PLAN_FILE... --rules RULES_FILE [flags]
+  tfplan-validator rules check PLAN_FILE... --rules RULES_FILE [flags]
 
 Flags:
   -h, --help           help for check
@@ -85,9 +85,9 @@ Flags:
 		},
 		{
 			name: "missing filter",
-			args: []string{"check", planPath("create"), "--rules", filterPath("missing")},
+			args: []string{"rules", "check", planPath("create"), "--rules", filterPath("missing")},
 			stdout: `Usage:
-  tfplan-validator check PLAN_FILE... --rules RULES_FILE [flags]
+  tfplan-validator rules check PLAN_FILE... --rules RULES_FILE [flags]
 
 Flags:
   -h, --help           help for check
@@ -96,9 +96,9 @@ Flags:
 		},
 		{
 			name: "invalid plan",
-			args: []string{"check", otherPath("plan-invalid-actions.json"), "--rules", filterPath("update")},
+			args: []string{"rules", "check", otherPath("plan-invalid-actions.json"), "--rules", filterPath("update")},
 			stdout: `Usage:
-  tfplan-validator check PLAN_FILE... --rules RULES_FILE [flags]
+  tfplan-validator rules check PLAN_FILE... --rules RULES_FILE [flags]
 
 Flags:
   -h, --help           help for check

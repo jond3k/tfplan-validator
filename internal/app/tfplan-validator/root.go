@@ -9,9 +9,14 @@ func New() *cobra.Command {
 		Use:   "tfplan-validator",
 		Short: "A simple way to validate Terraform plans. Designed to assist batch operations on large numbers of similar state files.",
 	}
-	cmd.AddCommand(newCreateCmd())
-	cmd.AddCommand(newCheckCmd())
-	cmd.AddCommand(newDescribeCmd())
-	cmd.AddCommand(newMergeCmd())
+	rules := &cobra.Command{
+		Use:   "rules",
+		Short: "Subcommands for working with rules files",
+	}
+	rules.AddCommand(newCreateCmd())
+	rules.AddCommand(newCheckCmd())
+	rules.AddCommand(newDescribeCmd())
+	rules.AddCommand(newMergeCmd())
+	cmd.AddCommand(rules)
 	return cmd
 }
