@@ -1,34 +1,15 @@
 package tfplan_validator
 
 import (
-	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"reflect"
 	"testing"
-	"time"
 
 	"github.com/davecgh/go-spew/spew"
 )
 
 func TestFindWorkspaces(t *testing.T) {
-	files := []string{
-		// Test cases in depth 1
-		"empty/.keep",
-		"main_only/main.tf",
-		"lock_only/.terraform.lock.hcl",
-		"modules/module1/main.tf",
-		"both/main.tf",
-		"both/.terraforn.lock.hcl",
-		// Test cases at depth 3
-		"a/b/c/empty/.keep",
-		"a/b/c/main_only/main.tf",
-		"a/b/c/lock_only/.terraform.lock.hcl",
-		"a/b/c/modules/module1/main.tf",
-		"a/b/c/both/main.tf",
-		"a/b/c/both/.terraforn.lock.hcl",
-	}
 	cases := []struct {
 		name     string
 		in       []string
@@ -40,29 +21,51 @@ func TestFindWorkspaces(t *testing.T) {
 			in:       []string{},
 			expected: []string{},
 		},
-		// !match
-		// match
-		// de-dupe
-		// sequential
+		{
+			name:     "no-match",
+			in:       []string{"no-match"},
+			expected: nil,
+			errStr:   "file does not exist",
+		},
+		{
+			name:     "match-exact",
+			in:       []string{"main_only/main.tf"},
+			expected: []string{"main_only"},
+		},
+		{
+			name:     "match-negation",
+			in:       []string{"main_only/main.tf", "!main_only/main.tf"},
+			expected: []string{},
+		},
+		{
+			name:     "match-duplicate",
+			in:       []string{"main_and_lock/main.tf", "main_and_lock/.terraform.lock.hcl"},
+			expected: []string{"main_and_lock"},
+		},
+		{
+			name:     "default-globs",
+			in:       defaultGlobs,
+			expected: []string{"main_and_lock", "main_only"},
+		},
 	}
 
-	basepath := path.Join(".", "test-results", "find", fmt.Sprint(time.Now().Unix()))
+	basepath := path.Join(".", "test", "find")
 
-	for _, file := range files {
-		filepath := path.Join(basepath, file)
-		if err := os.MkdirAll(path.Dir(filepath), 0700); err != nil {
-			t.Fatal(err)
-		} else if err := ioutil.WriteFile(filepath, []byte{}, 0700); err != nil {
-			t.Fatal(err)
-		}
+	// Change working dir for glob
+	oldwd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	} else if err := os.Chdir(basepath); err != nil {
+		t.Fatal(err)
 	}
+	defer os.Chdir(oldwd)
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			actual, err := findWorkspaces(tc.in)
 			errStr := makeErrStr(err)
 			if !reflect.DeepEqual(tc.expected, actual) || tc.errStr != errStr {
-				t.Fatalf("expected:\n\n%s\ngot:\n\n%s\n\nexpected err:%s\n\ngot err: %s\n", spew.Sdump(tc.expected), spew.Sdump(actual), tc.errStr, errStr)
+				t.Fatalf("expected:\n\n%s\ngot:\n\n%s\n\nexpected err: %s\n\ngot err: %s\n", spew.Sdump(tc.expected), spew.Sdump(actual), tc.errStr, errStr)
 			}
 		})
 	}
