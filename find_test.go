@@ -49,7 +49,7 @@ func TestFindWorkspaces(t *testing.T) {
 		},
 		{
 			name:     "default-globs",
-			in:       defaultGlobs,
+			in:       DefaultGlobs,
 			expected: []string{"main_and_lock", "main_only"},
 		},
 	}

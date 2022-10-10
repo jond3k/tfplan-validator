@@ -7,7 +7,7 @@ import (
 	"github.com/mattn/go-zglob"
 )
 
-var defaultGlobs = []string{
+var DefaultGlobs = []string{
 	"**/main.tf",
 	"**/.terraform.lock.hcl",
 	"!**/modules/**/main.tf",

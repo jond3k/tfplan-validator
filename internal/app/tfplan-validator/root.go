@@ -4,11 +4,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func New() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "tfplan-validator",
-		Short: "A simple way to validate Terraform plans. Designed to assist batch operations on large numbers of similar state files.",
-	}
+func newRulesCmd() *cobra.Command {
 	rules := &cobra.Command{
 		Use:   "rules",
 		Short: "Subcommands for working with rules files",
@@ -17,6 +13,16 @@ func New() *cobra.Command {
 	rules.AddCommand(newCheckCmd())
 	rules.AddCommand(newDescribeCmd())
 	rules.AddCommand(newMergeCmd())
-	cmd.AddCommand(rules)
+	return rules
+}
+
+func New() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "tfplan-validator",
+		Short: "A simple way to validate Terraform plans. Designed to assist batch operations on large numbers of similar state files.",
+	}
+	cmd.AddCommand(newRulesCmd())
+	cmd.AddCommand(newPlanCmd())
+	cmd.AddCommand(newApplyCmd())
 	return cmd
 }
