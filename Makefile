@@ -1,11 +1,14 @@
+export TESTARGS?=-count=1
+export TEST?='./...'
+
 install: mod test
 	go install ./cmd/tfplan-validator
 
 test: mod
-	gotestsum --format=short-verbose $(TEST) $(TESTARGS)
+	gotestsum --format=short-verbose -- ${TEST} ${TESTARGS}
 
 coverage: mod
-	gotestsum --format=short-verbose -- "./..." -coverprofile=coverage.txt -covermode=atomic
+	gotestsum --format=short-verbose -- ${TEST} -coverprofile=coverage.txt -covermode=atomic ${TESTARGS}
 
 lint:
 	gofmt -s -w .
@@ -15,9 +18,9 @@ coverage-html: coverage
 	go tool cover -html=coverage.txt
 
 mod:
-	go install gotest.tools/gotestsum@latest
-	go install github.com/client9/misspell/cmd/misspell@latest
-	go mod download && go mod verify && go mod tidy
+	# go install gotest.tools/gotestsum@latest
+	# go install github.com/client9/misspell/cmd/misspell@latest
+	# go mod download && go mod verify && go mod tidy
 
 release: mod test lint
 	@if [ -z "$${RELEASE}" ]; then echo "ERROR: the RELEASE variable must be specified" && exit 1; fi
