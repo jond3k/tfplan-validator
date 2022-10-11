@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func runPlanCmd(cmd *cobra.Command, args []string) error {
+func runPlanCmd(cmd *cobra.Command, searchDirs []string) error {
 	var (
 		globs         []string
 		workspaceDirs []string
@@ -18,6 +18,10 @@ func runPlanCmd(cmd *cobra.Command, args []string) error {
 		err           error
 	)
 
+	if len(searchDirs) == 0 {
+		searchDirs = []string{"."}
+	}
+
 	if globs, err = cmd.Flags().GetStringArray("glob"); err != nil {
 		return err
 	} else if baseCacheDir, err = cmd.Flags().GetString("cache-dir"); err != nil {
@@ -26,15 +30,15 @@ func runPlanCmd(cmd *cobra.Command, args []string) error {
 		return err
 	} else if initArgs, err = cmd.Flags().GetString("init-args"); err != nil {
 		return err
-	} else if workspaceDirs, err = tfpv.FindWorkspaces(globs); err != nil {
+	} else if workspaceDirs, err = tfpv.FindWorkspaces(searchDirs, globs); err != nil {
 		return err
 	}
 
 	if len(workspaceDirs) < 1 {
-		return fmt.Errorf("unable to find workspaces using glob %s", globs)
+		return fmt.Errorf("unable to find workspaces in %s using globs %s", searchDirs, globs)
 	}
 
-	fmt.Printf("Found %d workspaces %s\n", len(workspaceDirs), workspaceDirs)
+	fmt.Printf("Found %d workspaces %s in %s using globs %s\n", len(workspaceDirs), workspaceDirs, searchDirs, globs)
 	cmd.SilenceUsage = true
 
 	if mf, err = NewManifest(command, initArgs, baseCacheDir, workspaceDirs); err != nil {
@@ -48,8 +52,8 @@ func runPlanCmd(cmd *cobra.Command, args []string) error {
 
 func newPlanCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "plan",
-		Short: "Runs plans on any workspaces it discovers in the current working directory and then creates a validator",
+		Use:   "plan [searchPath]...",
+		Short: "Runs plans on any workspaces it discovers and then creates a validator. It will search the working directory if no list of search paths are provided",
 		RunE:  runPlanCmd,
 	}
 	cmd.Flags().String("cache-dir", ".tfpv-cache", "The workspace directory for collecting plans and rules")
