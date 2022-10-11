@@ -9,34 +9,33 @@ import (
 
 func runPlanCmd(cmd *cobra.Command, args []string) error {
 	var (
-		globs      []string
-		workspaces []string
-		cacheDir   string
-		command    string
-		initArgs   string
-		err        error
+		globs         []string
+		workspaceDirs []string
+		baseCacheDir  string
+		command       string
+		initArgs      string
+		mf            *tfpv.Manifest
+		err           error
 	)
 
 	if globs, err = cmd.Flags().GetStringArray("glob"); err != nil {
 		return err
-	} else if cacheDir, err = cmd.Flags().GetString("cache-dir"); err != nil {
+	} else if baseCacheDir, err = cmd.Flags().GetString("cache-dir"); err != nil {
 		return err
 	} else if command, err = cmd.Flags().GetString("command"); err != nil {
 		return err
 	} else if initArgs, err = cmd.Flags().GetString("init-args"); err != nil {
 		return err
-	} else if workspaces, err = tfpv.FindWorkspaces(globs); err != nil {
+	} else if workspaceDirs, err = tfpv.FindWorkspaces(globs); err != nil {
 		return err
 	}
 
-	fmt.Printf("Found %d workspaces %s\n", len(workspaces), workspaces)
+	fmt.Printf("Found %d workspaces %s\n", len(workspaceDirs), workspaceDirs)
 
-	for _, workspace := range workspaces {
-		if ws, err := tfpv.NewWorkspace(command, initArgs, cacheDir, workspace); err != nil {
-			return err
-		} else if err = tfpv.Plan(ws); err != nil {
-			return err
-		}
+	if mf, err = tfpv.NewManifest(command, initArgs, baseCacheDir, workspaceDirs); err != nil {
+		return err
+	} else if err = tfpv.Plan(mf); err != nil {
+		return err
 	}
 
 	return nil

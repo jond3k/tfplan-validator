@@ -2,6 +2,7 @@ package tfplan_validator
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -23,7 +24,33 @@ type Workspace struct {
 	WorkDir      string
 }
 
-func NewWorkspace(command, initArgs, baseCacheDir string, workDir string) (ws *Workspace, err error) {
+// Manifest
+type Manifest struct {
+	Filename     string
+	BaseCacheDir string
+	Workspaces   []*Workspace
+}
+
+func NewManifest(command, initArgs, baseCacheDir string, workspaceDirs []string) (mf *Manifest, err error) {
+	mf = &Manifest{}
+
+	if mf.BaseCacheDir, err = filepath.Abs(baseCacheDir); err != nil {
+		return nil, err
+	} else if mf.Filename, err = filepath.Abs(filepath.Join(baseCacheDir, "manifest.json")); err != nil {
+		return nil, err
+	}
+
+	for _, workspaceDir := range workspaceDirs {
+		if ws, err := NewWorkspace(command, initArgs, baseCacheDir, workspaceDir); err != nil {
+			return nil, err
+		} else {
+			mf.Workspaces = append(mf.Workspaces, ws)
+		}
+	}
+	return mf, nil
+}
+
+func NewWorkspace(command, initArgs, baseCacheDir, workDir string) (ws *Workspace, err error) {
 	ws = &Workspace{}
 	ws.InitArgs = initArgs
 	if ws.CacheDir, err = filepath.Abs(filepath.Join(baseCacheDir, workDir)); err != nil {
@@ -47,10 +74,26 @@ func NewWorkspace(command, initArgs, baseCacheDir string, workDir string) (ws *W
 	return ws, nil
 }
 
-func Plan(ws *Workspace) error {
-	if err := execPlan(ws); err != nil {
+func Plan(mf *Manifest) error {
+	for _, ws := range mf.Workspaces {
+		if err := execPlan(ws); err != nil {
+			return err
+		} else if err := execShow(ws); err != nil {
+			return err
+		}
+	}
+	if err := saveManifest(mf); err != nil {
 		return err
-	} else if err := execShow(ws); err != nil {
+	}
+	return nil
+}
+
+func saveManifest(mf *Manifest) error {
+	if err := os.MkdirAll(mf.BaseCacheDir, fileMode); err != nil {
+		return err
+	} else if bytes, err := json.MarshalIndent(mf, "", "  "); err != nil {
+		return err
+	} else if err := ioutil.WriteFile(mf.Filename, bytes, fileMode); err != nil {
 		return err
 	}
 	return nil
