@@ -1,4 +1,4 @@
-package tfplan_validator
+package cmd
 
 import (
 	"bytes"
@@ -9,26 +9,29 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	tfpv "github.com/fautom/tfplan-validator"
 )
 
 // fileMode allows full access for only the current user as the work directory may contain sensitive values
 const fileMode = 0700
 
-// Workspace encapsulates the run of a terraform command
+// Workspace describes a single terraform plan operation
 type Workspace struct {
-	CacheDir     string
-	Command      string
-	InitArgs     string
-	PlanBinPath  string
-	PlanJsonPath string
-	WorkDir      string
+	CacheDir     string `json:"cache_dir"`
+	Command      string `json:"command"`
+	InitArgs     string `json:"init_args"`
+	PlanBinPath  string `json:"plan_bin_path"`
+	PlanJsonPath string `json:"plan_json_path"`
+	WorkDir      string `json:"work_dir"`
 }
 
-// Manifest
+// Manifest is used to give the apply operation everything it needs to know about the plans we ran
 type Manifest struct {
-	Filename     string
-	BaseCacheDir string
-	Workspaces   []*Workspace
+	Filename     string           `json:"filename"`
+	BaseCacheDir string           `json:"base_cache_dir"`
+	Workspaces   []*Workspace     `json:"workspaces"`
+	PlanFilter   *tfpv.PlanFilter `json:"plan_filter"`
 }
 
 func NewManifest(command, initArgs, baseCacheDir string, workspaceDirs []string) (mf *Manifest, err error) {
@@ -75,6 +78,7 @@ func NewWorkspace(command, initArgs, baseCacheDir, workDir string) (ws *Workspac
 }
 
 func Plan(mf *Manifest) error {
+	var err error
 	for _, ws := range mf.Workspaces {
 		if err := execPlan(ws); err != nil {
 			return err
@@ -82,10 +86,26 @@ func Plan(mf *Manifest) error {
 			return err
 		}
 	}
-	if err := saveManifest(mf); err != nil {
+
+	if mf.PlanFilter, err = filterFromWorkspaces(mf.Workspaces); err != nil {
+		return err
+	} else if err := saveManifest(mf); err != nil {
 		return err
 	}
+
 	return nil
+}
+
+func filterFromWorkspaces(wss []*Workspace) (*tfpv.PlanFilter, error) {
+	planPaths := []string{}
+	for _, ws := range wss {
+		planPaths = append(planPaths, ws.PlanJsonPath)
+	}
+	if filter, err := tfpv.NewFilterFromPlanPaths(planPaths); err != nil {
+		return nil, err
+	} else {
+		return filter, nil
+	}
 }
 
 func saveManifest(mf *Manifest) error {

@@ -14,7 +14,7 @@ func runPlanCmd(cmd *cobra.Command, args []string) error {
 		baseCacheDir  string
 		command       string
 		initArgs      string
-		mf            *tfpv.Manifest
+		mf            *Manifest
 		err           error
 	)
 
@@ -32,9 +32,9 @@ func runPlanCmd(cmd *cobra.Command, args []string) error {
 
 	fmt.Printf("Found %d workspaces %s\n", len(workspaceDirs), workspaceDirs)
 
-	if mf, err = tfpv.NewManifest(command, initArgs, baseCacheDir, workspaceDirs); err != nil {
+	if mf, err = NewManifest(command, initArgs, baseCacheDir, workspaceDirs); err != nil {
 		return err
-	} else if err = tfpv.Plan(mf); err != nil {
+	} else if err = Plan(mf); err != nil {
 		return err
 	}
 
