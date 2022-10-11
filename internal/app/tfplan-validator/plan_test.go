@@ -9,7 +9,7 @@ func TestPlanCmd(t *testing.T) {
 		{
 			name:   "",
 			args:   []string{"plan"},
-			stdout: ``,
+			stdout: `abc`,
 		},
 	}
 

@@ -67,7 +67,7 @@ func TestFindWorkspaces(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			actual, err := findWorkspaces(tc.in)
+			actual, err := FindWorkspaces(tc.in)
 			errStr := makeErrStr(err)
 			if !reflect.DeepEqual(tc.expected, actual) || tc.errStr != errStr {
 				t.Fatalf("expected:\n\n%s\ngot:\n\n%s\n\nexpected err: %s\n\ngot err: %s\n", spew.Sdump(tc.expected), spew.Sdump(actual), tc.errStr, errStr)

@@ -14,9 +14,9 @@ var DefaultGlobs = []string{
 	"!**/modules/**/.terraform.lock.hcl",
 }
 
-// findWorkspaces iterates the current working directory and finds candidate workspaces
+// FindWorkspaces iterates the current working directory and finds candidate workspaces
 // it takes a series of globs which support double stars for recursion and ! for negation
-func findWorkspaces(globs []string) ([]string, error) {
+func FindWorkspaces(globs []string) ([]string, error) {
 	paths := map[string]bool{}
 	for _, glob := range globs {
 		if len(glob) < 1 {

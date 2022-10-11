@@ -2,3 +2,4 @@ coverage.txt
 bin/*
 test-results/*
 !test-results/.keep
+.tfpv-cache/
