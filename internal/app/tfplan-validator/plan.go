@@ -30,7 +30,12 @@ func runPlanCmd(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	if len(workspaceDirs) < 1 {
+		return fmt.Errorf("unable to find workspaces using glob %s", globs)
+	}
+
 	fmt.Printf("Found %d workspaces %s\n", len(workspaceDirs), workspaceDirs)
+	cmd.SilenceUsage = true
 
 	if mf, err = NewManifest(command, initArgs, baseCacheDir, workspaceDirs); err != nil {
 		return err
