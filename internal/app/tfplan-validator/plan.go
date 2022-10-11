@@ -32,9 +32,9 @@ func runPlanCmd(cmd *cobra.Command, args []string) error {
 	fmt.Printf("Found %d workspaces %s\n", len(workspaces), workspaces)
 
 	for _, workspace := range workspaces {
-		if exec, err := tfpv.NewTerraformExec(command, initArgs, cacheDir, workspace); err != nil {
+		if ws, err := tfpv.NewWorkspace(command, initArgs, cacheDir, workspace); err != nil {
 			return err
-		} else if err = exec.Plan(); err != nil {
+		} else if err = tfpv.Plan(ws); err != nil {
 			return err
 		}
 	}

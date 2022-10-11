@@ -13,59 +13,59 @@ import (
 // fileMode allows full access for only the current user as the work directory may contain sensitive values
 const fileMode = 0700
 
-// TerraformExec encapsulates the run of a terraform command
-type TerraformExec struct {
-	cacheDir     string
-	command      string
-	initArgs     string
-	planBinPath  string
-	planJsonPath string
-	workDir      string
+// Workspace encapsulates the run of a terraform command
+type Workspace struct {
+	CacheDir     string
+	Command      string
+	InitArgs     string
+	PlanBinPath  string
+	PlanJsonPath string
+	WorkDir      string
 }
 
-func NewTerraformExec(command, initArgs, baseCacheDir string, workDir string) (pe *TerraformExec, err error) {
-	pe = &TerraformExec{}
-	pe.initArgs = initArgs
-	if pe.cacheDir, err = filepath.Abs(filepath.Join(baseCacheDir, workDir)); err != nil {
+func NewWorkspace(command, initArgs, baseCacheDir string, workDir string) (ws *Workspace, err error) {
+	ws = &Workspace{}
+	ws.InitArgs = initArgs
+	if ws.CacheDir, err = filepath.Abs(filepath.Join(baseCacheDir, workDir)); err != nil {
 		return nil, err
-	} else if pe.workDir, err = filepath.Abs(workDir); err != nil {
+	} else if ws.WorkDir, err = filepath.Abs(workDir); err != nil {
 		return nil, err
-	} else if pe.planBinPath, err = filepath.Abs(filepath.Join(pe.cacheDir, "plan.bin")); err != nil {
+	} else if ws.PlanBinPath, err = filepath.Abs(filepath.Join(ws.CacheDir, "plan.bin")); err != nil {
 		return nil, err
-	} else if pe.planJsonPath, err = filepath.Abs(filepath.Join(pe.cacheDir, "plan.json")); err != nil {
+	} else if ws.PlanJsonPath, err = filepath.Abs(filepath.Join(ws.CacheDir, "plan.json")); err != nil {
 		return nil, err
 	}
 
 	if command != "" {
-		pe.command = command
+		ws.Command = command
 	} else if _, err := ioutil.ReadFile(filepath.Join(workDir, "terragrunt.hcl")); err == io.EOF {
-		pe.command = "terragrunt"
+		ws.Command = "terragrunt"
 	} else {
-		pe.command = "terraform"
+		ws.Command = "terraform"
 	}
 
-	return pe, nil
+	return ws, nil
 }
 
-func (pe *TerraformExec) Plan() error {
-	if err := pe.execPlan(); err != nil {
+func Plan(ws *Workspace) error {
+	if err := execPlan(ws); err != nil {
 		return err
-	} else if err := pe.execShow(); err != nil {
+	} else if err := execShow(ws); err != nil {
 		return err
 	}
 	return nil
 }
 
 // Plan runs terraform for a single workDir and stores the results in the cache
-func (pe *TerraformExec) execPlan() error {
-	if err := os.MkdirAll(pe.cacheDir, fileMode); err != nil {
+func execPlan(ws *Workspace) error {
+	if err := os.MkdirAll(ws.CacheDir, fileMode); err != nil {
 		return err
 	}
-	cmd := exec.Command(pe.command, "plan", "-out", pe.planBinPath)
+	cmd := exec.Command(ws.Command, "plan", "-out", ws.PlanBinPath)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
-	cmd.Dir = pe.workDir
+	cmd.Dir = ws.WorkDir
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("failed to run '%s' from '%s': %w", cmd.String(), cmd.Dir, err)
 	}
@@ -73,19 +73,19 @@ func (pe *TerraformExec) execPlan() error {
 }
 
 // Show converts a plan to a json file that can be read by the validator
-func (pe *TerraformExec) execShow() error {
-	if err := os.MkdirAll(pe.cacheDir, fileMode); err != nil {
+func execShow(ws *Workspace) error {
+	if err := os.MkdirAll(ws.CacheDir, fileMode); err != nil {
 		return err
 	}
-	cmd := exec.Command(pe.command, "show", "-json", pe.planBinPath)
+	cmd := exec.Command(ws.Command, "show", "-json", ws.PlanBinPath)
 	outbuf := &bytes.Buffer{}
-	cmd.Dir = pe.workDir
+	cmd.Dir = ws.WorkDir
 	cmd.Stdout = outbuf
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("failed to run '%s' from '%s': %w", cmd.String(), cmd.Dir, err)
-	} else if err := ioutil.WriteFile(pe.planJsonPath, outbuf.Bytes(), fileMode); err != nil {
-		return fmt.Errorf("failed to write %s: %w", pe.planJsonPath, err)
+	} else if err := ioutil.WriteFile(ws.PlanJsonPath, outbuf.Bytes(), fileMode); err != nil {
+		return fmt.Errorf("failed to write %s: %w", ws.PlanJsonPath, err)
 	}
 	return nil
 }
