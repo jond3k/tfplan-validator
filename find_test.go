@@ -100,8 +100,11 @@ func TestFindWorkspaces(t *testing.T) {
 			expected:   []string{"b"},
 		},
 		{
-			name:       "default-ignores-terragrunt-cache",
-			files:      []string{"a/main.tf", "a/.terragrunt-cache/main.tf", "b/ignore.txt"},
+			name: "default-ignores-terragrunt-cache",
+			files: []string{
+				"a/main.tf",
+				"a/.terragrunt-cache/a/main.tf",
+			},
 			searchDirs: []string{"."},
 			globs:      DefaultGlobs,
 			expected:   []string{"a"},

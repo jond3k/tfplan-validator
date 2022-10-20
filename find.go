@@ -2,6 +2,7 @@ package tfplan_validator
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
@@ -10,11 +11,12 @@ import (
 )
 
 var DefaultGlobs = []string{
-	"**/main.tf",
+	"**/*.tf",
 	"**/.terraform.lock.hcl",
-	"!**/modules/**/main.tf",
+	"!**/modules/**/*.tf",
 	"!**/modules/**/.terraform.lock.hcl",
-	"!**/.terragrunt-cache/**",
+	"!**/.terragrunt-cache/**/*.tf",
+	"!**/.terragrunt-cache/**/.terraform.lock.hcl",
 }
 
 // FindWorkspaces iterates the current working directory and finds candidate workspaces
@@ -63,6 +65,7 @@ func FindWorkspaces(searchDirs []string, globs []string) ([]string, error) {
 				if absdir, err := filepath.Abs(filepath.Dir(file)); err != nil {
 					return nil, err
 				} else {
+					fmt.Printf("file: %s, old: %t, new: %t, glob: %s\n", file, paths[absdir], !negate, glob)
 					paths[absdir] = !negate
 				}
 			}
