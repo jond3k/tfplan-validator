@@ -39,7 +39,7 @@ func NewManifest(command, initArgs, baseCacheDir string, workspaceDirs []string)
 
 	if mf.BaseCacheDir, err = filepath.Abs(baseCacheDir); err != nil {
 		return nil, err
-	} else if mf.Filename, err = filepath.Abs(filepath.Join(baseCacheDir, "manifest.json")); err != nil {
+	} else if mf.Filename, err = filepath.Abs(getManifestPath(baseCacheDir)); err != nil {
 		return nil, err
 	}
 
@@ -50,6 +50,25 @@ func NewManifest(command, initArgs, baseCacheDir string, workspaceDirs []string)
 			mf.Workspaces = append(mf.Workspaces, ws)
 		}
 	}
+	return mf, nil
+}
+
+func getManifestPath(cacheDir string) string {
+	return filepath.Join(cacheDir, "manifest.json")
+}
+
+func LoadManifest(baseCacheDir string) (*Manifest, error) {
+	mf := &Manifest{}
+
+	if filename, err := filepath.Abs(getManifestPath(baseCacheDir)); err != nil {
+		return nil, err
+	} else if bytes, err := ioutil.ReadFile(filename); err != nil {
+		return nil, err
+	} else if err := json.Unmarshal(bytes, mf); err != nil {
+		return nil, err
+	}
+	// TODO: validate
+
 	return mf, nil
 }
 
@@ -65,21 +84,41 @@ func NewWorkspace(command, initArgs, baseCacheDir, workDir string) (ws *Workspac
 	} else if ws.PlanJsonPath, err = filepath.Abs(filepath.Join(ws.CacheDir, "plan.json")); err != nil {
 		return nil, err
 	}
+	ws.Command = command
 
-	if command != "" {
-		ws.Command = command
-	} else if _, err := ioutil.ReadFile(filepath.Join(workDir, "terragrunt.hcl")); err == io.EOF {
+	return ws, nil
+}
+
+func determineCommand(ws *Workspace) {
+	if ws.Command != "" {
+		return
+	} else if _, err := ioutil.ReadFile(filepath.Join(ws.WorkDir, "terragrunt.hcl")); err == io.EOF {
 		ws.Command = "terragrunt"
 	} else {
 		ws.Command = "terraform"
 	}
+}
 
-	return ws, nil
+func Apply(mf *Manifest) error {
+	var err error
+	for _, ws := range mf.Workspaces {
+
+		if err = execInit(ws); err != nil {
+			return err
+		} else if err = execApply(ws); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func Plan(mf *Manifest) error {
 	var err error
 	for _, ws := range mf.Workspaces {
+
+		determineCommand(ws)
+
 		if err = execInit(ws); err != nil {
 			return err
 		} else if err = execPlan(ws); err != nil {
@@ -109,7 +148,7 @@ func saveManifest(mf *Manifest) error {
 	return nil
 }
 
-// Init runs terraform for a single workDir
+// execInit runs terraform for a single workDir
 func execInit(ws *Workspace) error {
 	if err := os.MkdirAll(ws.CacheDir, fileMode); err != nil {
 		return err
@@ -125,7 +164,7 @@ func execInit(ws *Workspace) error {
 	return nil
 }
 
-// Plan runs terraform for a single workDir and stores the results in the cache
+// execPlan runs terraform for a single workDir and stores the results in the cache
 func execPlan(ws *Workspace) error {
 	if err := os.MkdirAll(ws.CacheDir, fileMode); err != nil {
 		return err
@@ -141,7 +180,7 @@ func execPlan(ws *Workspace) error {
 	return nil
 }
 
-// Show converts a plan to a json file that can be read by the validator
+// execShow converts a plan to a json file that can be read by the validator
 func execShow(ws *Workspace) error {
 	if err := os.MkdirAll(ws.CacheDir, fileMode); err != nil {
 		return err
@@ -155,6 +194,22 @@ func execShow(ws *Workspace) error {
 		return fmt.Errorf("failed to run '%s' from '%s': %w", cmd.String(), cmd.Dir, err)
 	} else if err := ioutil.WriteFile(ws.PlanJsonPath, outbuf.Bytes(), fileMode); err != nil {
 		return fmt.Errorf("failed to write %s: %w", ws.PlanJsonPath, err)
+	}
+	return nil
+}
+
+// execApply runs terraform for a single workDir and stores the results in the cache
+func execApply(ws *Workspace) error {
+	if err := os.MkdirAll(ws.CacheDir, fileMode); err != nil {
+		return err
+	}
+	cmd := exec.Command(ws.Command, "apply", ws.PlanBinPath)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	cmd.Dir = ws.WorkDir
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("failed to run '%s' from '%s': %w", cmd.String(), cmd.Dir, err)
 	}
 	return nil
 }

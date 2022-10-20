@@ -4,6 +4,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// DefaultCacheDir should be consistent between operations or the manifests wont be found
+const DefaultCacheDir = ".tfpv-cache"
+
 func newRulesCmd() *cobra.Command {
 	rules := &cobra.Command{
 		Use:   "rules",
