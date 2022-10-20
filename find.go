@@ -2,7 +2,6 @@ package tfplan_validator
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
@@ -65,7 +64,7 @@ func FindWorkspaces(searchDirs []string, globs []string) ([]string, error) {
 				if absdir, err := filepath.Abs(filepath.Dir(file)); err != nil {
 					return nil, err
 				} else {
-					fmt.Printf("file: %s, old: %t, new: %t, glob: %s\n", file, paths[absdir], !negate, glob)
+					// fmt.Printf("file: %s, old: %t, new: %t, glob: %s\n", file, paths[absdir], !negate, glob)
 					paths[absdir] = !negate
 				}
 			}
