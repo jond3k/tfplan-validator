@@ -80,7 +80,9 @@ func NewWorkspace(command, initArgs, baseCacheDir, workDir string) (ws *Workspac
 func Plan(mf *Manifest) error {
 	var err error
 	for _, ws := range mf.Workspaces {
-		if err = execPlan(ws); err != nil {
+		if err = execInit(ws); err != nil {
+			return err
+		} else if err = execPlan(ws); err != nil {
 			return err
 		} else if err = execShow(ws); err != nil {
 			return err
@@ -103,6 +105,22 @@ func saveManifest(mf *Manifest) error {
 		return err
 	} else if err := ioutil.WriteFile(mf.Filename, bytes, fileMode); err != nil {
 		return err
+	}
+	return nil
+}
+
+// Init runs terraform for a single workDir
+func execInit(ws *Workspace) error {
+	if err := os.MkdirAll(ws.CacheDir, fileMode); err != nil {
+		return err
+	}
+	cmd := exec.Command(ws.Command, "init")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	cmd.Dir = ws.WorkDir
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("failed to run '%s' from '%s': %w", cmd.String(), cmd.Dir, err)
 	}
 	return nil
 }
