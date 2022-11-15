@@ -16,6 +16,9 @@ import (
 // fileMode allows full access for only the current user as the work directory may contain sensitive values
 const fileMode = 0700
 
+// planRetries is the number of times we will retry a plan. Helps with connection timeouts
+const planRetries = 2
+
 // Workspace describes a single terraform plan operation
 type Workspace struct {
 	CacheDir     string           `json:"cache_dir"`
@@ -121,7 +124,7 @@ func Plan(mf *Manifest) error {
 
 		if err = execInit(ws); err != nil {
 			return err
-		} else if err = execPlan(ws); err != nil {
+		} else if err = retryExec(execPlan, ws, planRetries); err != nil {
 			return err
 		} else if err = execShow(ws); err != nil {
 			return err
@@ -162,6 +165,18 @@ func execInit(ws *Workspace) error {
 		return fmt.Errorf("failed to run '%s' from '%s': %w", cmd.String(), cmd.Dir, err)
 	}
 	return nil
+}
+
+// retryExec will retry a function like execPlan
+func retryExec(fn func(*Workspace) error, ws *Workspace, retries int) (err error) {
+	for retries > 0 {
+		err = fn(ws)
+		if err == nil {
+			return nil
+		}
+		retries -= 1
+	}
+	return err
 }
 
 // execPlan runs terraform for a single workDir and stores the results in the cache
