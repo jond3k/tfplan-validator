@@ -17,7 +17,7 @@ import (
 const fileMode = 0700
 
 // planRetries is the number of times we will retry a plan. Helps with connection timeouts
-const planRetries = 2
+const planRetries = 4
 
 // Workspace describes a single terraform plan operation
 type Workspace struct {
